@@ -1,0 +1,9 @@
+{
+  "name": "pelangi-pengumuman",
+  "version": "1.0.0",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mongoose": "^8.13.2"
+  }
+}
