@@ -46,16 +46,81 @@ module.exports = async (req, res) => {
 
     await connectDB()
 
+    // ======================
+    // PARSE BODY
+    // ======================
+
+    let body = ''
+
+    await new Promise(resolve => {
+
+      req.on('data', chunk => {
+        body += chunk
+      })
+
+      req.on('end', resolve)
+    })
+
+    req.body = body
+      ? JSON.parse(body)
+      : {}
+
+
+
+    // ======================
     // TEST API
+    // ======================
+
     if(req.url === '/api'){
 
-      return res.status(200).send('API hidup')
+      return res
+        .status(200)
+        .send('API hidup')
     }
 
-    // GET ALL STUDENTS
+
+
+    // ======================
+    // LOGIN ADMIN
+    // ======================
+
     if(
-      req.url === '/students' ||
-      req.url === '/api/students'
+      req.method === 'POST' &&
+      (
+        req.url === '/login' ||
+        req.url === '/api/login'
+      )
+    ){
+
+      const data = req.body
+
+      if(
+        data.username === 'admin' &&
+        data.password === '123456'
+      ){
+
+        return res.status(200).json({
+          message:'Login berhasil'
+        })
+      }
+
+      return res.status(401).json({
+        message:'Username atau password salah'
+      })
+    }
+
+
+
+    // ======================
+    // GET ALL STUDENTS
+    // ======================
+
+    if(
+      req.method === 'GET' &&
+      (
+        req.url === '/students' ||
+        req.url === '/api/students'
+      )
     ){
 
       const students = await Student.find()
@@ -63,8 +128,16 @@ module.exports = async (req, res) => {
       return res.status(200).json(students)
     }
 
+
+
+    // ======================
     // GET BY NISN
-    if(req.url.startsWith('/api/students/')){
+    // ======================
+
+    if(
+      req.method === 'GET' &&
+      req.url.startsWith('/api/students/')
+    ){
 
       const nisn = req.url.split('/').pop()
 
@@ -77,133 +150,91 @@ module.exports = async (req, res) => {
         })
       }
 
-      return res.json(student)
+      return res.status(200).json(student)
     }
 
-    let body = ''
 
-await new Promise(resolve => {
 
-  req.on('data', chunk => {
-    body += chunk
-  })
+    // ======================
+    // ADD STUDENT
+    // ======================
 
-  req.on('end', resolve)
-})
+    if(
+      req.method === 'POST' &&
+      (
+        req.url === '/students' ||
+        req.url === '/api/students'
+      )
+    ){
 
-req.body = body
-  ? JSON.parse(body)
-  : {}
+      const student = new Student({
+        nisn:req.body.nisn,
+        nama:req.body.nama,
+        kelas:req.body.kelas,
+        status:req.body.status
+      })
 
-  // ======================
-// ADD STUDENT
-// ======================
+      await student.save()
 
-if(
-  req.method === 'POST' &&
-  (
-    req.url === '/students' ||
-    req.url === '/api/students'
-  )
-){
-
-  const student = new Student({
-    nisn:req.body.nisn,
-    nama:req.body.nama,
-    kelas:req.body.kelas,
-    status:req.body.status
-  })
-
-  await student.save()
-
-  return res.status(200).json({
-    message:'Data berhasil ditambahkan'
-  })
-}
-
-// ======================
-// UPDATE STUDENT
-// ======================
-
-if(
-  req.method === 'PUT' &&
-  req.url.startsWith('/api/students/')
-){
-
-  const id = req.url.split('/').pop()
-
-  await Student.findByIdAndUpdate(
-    id,
-    {
-      nisn:req.body.nisn,
-      nama:req.body.nama,
-      kelas:req.body.kelas,
-      status:req.body.status
+      return res.status(200).json({
+        message:'Data berhasil ditambahkan'
+      })
     }
-  )
 
-  return res.status(200).json({
-    message:'Data berhasil diupdate'
-  })
-}
 
-// ======================
-// DELETE STUDENT
-// ======================
 
-if(
-  req.method === 'DELETE' &&
-  req.url.startsWith('/api/students/')
-){
+    // ======================
+    // UPDATE STUDENT
+    // ======================
 
-  const id = req.url.split('/').pop()
+    if(
+      req.method === 'PUT' &&
+      req.url.startsWith('/api/students/')
+    ){
 
-  await Student.findByIdAndDelete(id)
+      const id = req.url.split('/').pop()
 
-  return res.status(200).json({
-    message:'Data berhasil dihapus'
-  })
-}
-// ======================
-// LOGIN ADMIN
-// ======================
+      await Student.findByIdAndUpdate(
+        id,
+        {
+          nisn:req.body.nisn,
+          nama:req.body.nama,
+          kelas:req.body.kelas,
+          status:req.body.status
+        }
+      )
 
-if(
-  req.method === 'POST' &&
-  (
-    req.url === '/login' ||
-    req.url === '/api/login'
-  )
-){
+      return res.status(200).json({
+        message:'Data berhasil diupdate'
+      })
+    }
 
-  let body = ''
 
-  await new Promise(resolve => {
 
-    req.on('data', chunk => {
-      body += chunk
-    })
+    // ======================
+    // DELETE STUDENT
+    // ======================
 
-    req.on('end', resolve)
-  })
+    if(
+      req.method === 'DELETE' &&
+      req.url.startsWith('/api/students/')
+    ){
 
-  const data = JSON.parse(body)
+      const id = req.url.split('/').pop()
 
-  // USERNAME & PASSWORD
-  if(
-    data.username === 'admin' &&
-    data.password === '123456'
-  ){
+      await Student.findByIdAndDelete(id)
 
-    return res.status(200).json({
-      message:'Login berhasil'
-    })
-  }
+      return res.status(200).json({
+        message:'Data berhasil dihapus'
+      })
+    }
 
-  return res.status(401).json({
-    message:'Username atau password salah'
-  })
-}
+
+
+    // ======================
+    // NOT FOUND
+    // ======================
+
     return res.status(404).json({
       message:'Route tidak ditemukan'
     })
