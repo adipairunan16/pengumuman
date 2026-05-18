@@ -79,7 +79,46 @@ module.exports = async (req, res) => {
 
       return res.json(student)
     }
+// ======================
+// LOGIN ADMIN
+// ======================
 
+if(
+  req.method === 'POST' &&
+  (
+    req.url === '/login' ||
+    req.url === '/api/login'
+  )
+){
+
+  let body = ''
+
+  await new Promise(resolve => {
+
+    req.on('data', chunk => {
+      body += chunk
+    })
+
+    req.on('end', resolve)
+  })
+
+  const data = JSON.parse(body)
+
+  // USERNAME & PASSWORD
+  if(
+    data.username === 'admin' &&
+    data.password === 'admin123'
+  ){
+
+    return res.status(200).json({
+      message:'Login berhasil'
+    })
+  }
+
+  return res.status(401).json({
+    message:'Username atau password salah'
+  })
+}
     return res.status(404).json({
       message:'Route tidak ditemukan'
     })
