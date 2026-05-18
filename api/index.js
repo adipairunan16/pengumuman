@@ -18,14 +18,20 @@ const Student = mongoose.model(
 
 module.exports = async (req, res) => {
 
-  // ROOT
-  if(req.url === '/api'){
+  // TEST
+  if(
+    req.url === '/' ||
+    req.url === '/api'
+  ){
 
     return res.status(200).send('API hidup')
   }
 
   // GET ALL STUDENTS
-  if(req.url === '/api/students'){
+  if(
+    req.url === '/students' ||
+    req.url === '/api/students'
+  ){
 
     try {
 
@@ -41,8 +47,8 @@ module.exports = async (req, res) => {
     }
   }
 
-  // NOT FOUND
   return res.status(404).json({
-    message:'Route tidak ditemukan'
+    message:'Route tidak ditemukan',
+    url:req.url
   })
 }
