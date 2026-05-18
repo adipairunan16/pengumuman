@@ -6,7 +6,10 @@ const app = express()
 
 app.use(cors())
 app.use(express.json())
-
+app.get('/api/students', async(req,res)=>{
+  const students = await Student.find()
+  res.json(students)
+})
 // CONNECT MONGODB
 mongoose.connect(process.env.MONGO_URI, {
   dbName: 'db_kelulusan'
