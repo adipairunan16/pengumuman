@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Kelulusan</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      min-height:100vh;
+      background:linear-gradient(135deg,#1e3c72,#2a5298);
+      padding:20px;
+    }
+
+    .container{
+      max-width:900px;
+      margin:auto;
+    }
+
+    .card{
+      background:#fff;
+      padding:30px;
+      border-radius:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.2);
+      margin-bottom:20px;
+    }
+
+    .title{
+      text-align:center;
+      font-size:30px;
+      font-weight:bold;
+      color:#1e3c72;
+      margin-bottom:10px;
+    }
+
+    .subtitle{
+      text-align:center;
+      color:#666;
+      margin-bottom:25px;
+    }
+
+    input,
+    select{
+      width:100%;
+      padding:14px;
+      border:2px solid #ddd;
+      border-radius:12px;
+      margin-bottom:15px;
+      font-size:16px;
+    }
+
+    input:focus,
+    select:focus{
+      outline:none;
+      border-color:#1e3c72;
+    }
+
+    button{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      background:#1e3c72;
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      margin-bottom:10px;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#16325c;
+    }
+
+    .btn-warning{
+      background:#ff9500;
+    }
+
+    .btn-danger{
+      background:#ff3b30;
+    }
+
+    .btn-success{
+      background:#34c759;
+    }
+
+    .student-card{
+      border:1px solid #ddd;
+      border-radius:15px;
+      padding:20px;
+      margin-bottom:15px;
+    }
+
+    .student-card h3{
+      color:#1e3c72;
+      margin-bottom:10px;
+    }
+
+    .student-card p{
+      margin-bottom:5px;
+      color:#444;
+    }
+
+    .message{
+      display:none;
+      padding:15px;
+      border-radius:12px;
+      margin-top:15px;
+      text-align:center;
+      font-weight:bold;
+    }
+
+    .success{
+      background:#e7ffe7;
+      border:2px solid #34c759;
+      color:#155724;
+    }
+
+    .fail{
+      background:#ffe7e7;
+      border:2px solid #ff3b30;
+      color:#721c24;
+    }
+
+    @media(max-width:600px){
+
+      .card{
+        padding:20px;
+      }
+
+      .title{
+        font-size:24px;
+      }
+    }
+
+  </style>
+
+</head>
+<body>
+
+<div class="container">
+
+  <!-- FORM -->
+  <div class="card">
+
+    <div class="title">
+      ADMIN KELULUSAN
+    </div>
+
+    <div class="subtitle">
+      Tambah, Edit, dan Hapus Data Siswa
+    </div>
+
+    <input
+      type="text"
+      id="nisn"
+      placeholder="NISN"
+    >
+
+    <input
+      type="text"
+      id="nama"
+      placeholder="Nama Siswa"
+    >
+
+    <input
+      type="text"
+      id="kelas"
+      placeholder="Kelas"
+    >
+
+    <select id="status">
+
+      <option value="LULUS">
+        LULUS
+      </option>
+
+      <option value="TIDAK LULUS">
+        TIDAK LULUS
+      </option>
+
+    </select>
+
+    <button
+      id="saveBtn"
+      onclick="tambahSiswa()"
+    >
+      Simpan Data
+    </button>
+
+    <button
+      class="btn-success"
+      onclick="loadStudents()"
+    >
+      Tampilkan Semua Data
+    </button>
+
+    <button
+      class="btn-danger"
+      onclick="logout()"
+    >
+      Logout
+    </button>
+
+    <div id="message" class="message"></div>
+
+  </div>
+
+
+  <!-- LIST DATA -->
+  <div
+    id="studentList"
+    class="card"
+  >
+
+    <div class="subtitle">
+      Data siswa akan tampil di sini
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const BASE_URL = 'http://127.0.0.1:8000/api'
+
+let editId = null
+
+
+// ======================
+// TAMBAH SISWA
+// ======================
+
+async function tambahSiswa(){
+
+  const nisn = document
+    .getElementById('nisn')
+    .value
+
+  const nama = document
+    .getElementById('nama')
+    .value
+
+  const kelas = document
+    .getElementById('kelas')
+    .value
+
+  const status = document
+    .getElementById('status')
+    .value
+
+  const message = document
+    .getElementById('message')
+
+  if(!nisn || !nama || !kelas){
+
+    showMessage(
+      'Semua field wajib diisi',
+      false
+    )
+
+    return
+  }
+
+  try {
+
+    let response
+
+    // UPDATE
+    if(editId){
+
+      response = await fetch(
+        `${BASE_URL}/students/${editId}`,
+        {
+          method:'PUT',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify({
+            nisn,
+            nama,
+            kelas,
+            status
+          })
+        }
+      )
+
+    } else {
+
+      // TAMBAH
+      response = await fetch(
+        `${BASE_URL}/students`,
+        {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify({
+            nisn,
+            nama,
+            kelas,
+            status
+          })
+        }
+      )
+    }
+
+    if(!response.ok){
+
+      showMessage(
+        'Gagal menyimpan data',
+        false
+      )
+
+      return
+    }
+
+    showMessage(
+      editId
+        ? 'Data berhasil diupdate'
+        : 'Data berhasil ditambahkan',
+      true
+    )
+
+    resetForm()
+
+    loadStudents()
+
+  } catch(error){
+
+    showMessage(
+      'Server Error',
+      false
+    )
+  }
+}
+
+
+// ======================
+// TAMPILKAN DATA
+// ======================
+
+async function loadStudents(){
+
+  const studentList = document
+    .getElementById('studentList')
+
+  try {
+
+    const response = await fetch(
+      `${BASE_URL}/students`
+    )
+
+    const students = await response.json()
+
+    if(students.length === 0){
+
+      studentList.innerHTML = `
+        <div class="subtitle">
+          Tidak ada data siswa
+        </div>
+      `
+
+      return
+    }
+
+    studentList.innerHTML = ''
+
+    students.forEach(student => {
+
+      studentList.innerHTML += `
+
+        <div class="student-card">
+
+          <h3>${student.nama}</h3>
+
+          <p>
+            <b>NISN :</b>
+            ${student.nisn}
+          </p>
+
+          <p>
+            <b>Kelas :</b>
+            ${student.kelas}
+          </p>
+
+          <p>
+            <b>Status :</b>
+            ${student.status}
+          </p>
+
+          <button
+            class="btn-warning"
+            onclick="editStudent(
+              '${student.id}',
+              '${student.nisn}',
+              '${student.nama}',
+              '${student.kelas}',
+              '${student.status}'
+            )"
+          >
+            Edit
+          </button>
+
+          <button
+            class="btn-danger"
+            onclick="deleteStudent('${student.id}')"
+          >
+            Hapus
+          </button>
+
+        </div>
+
+      `
+    })
+
+  } catch(error){
+
+    studentList.innerHTML = `
+      <div class="subtitle">
+        Gagal mengambil data
+      </div>
+    `
+  }
+}
+
+
+// ======================
+// EDIT DATA
+// ======================
+
+function editStudent(
+  id,
+  nisn,
+  nama,
+  kelas,
+  status
+){
+
+  editId = id
+
+  document
+    .getElementById('nisn')
+    .value = nisn
+
+  document
+    .getElementById('nama')
+    .value = nama
+
+  document
+    .getElementById('kelas')
+    .value = kelas
+
+  document
+    .getElementById('status')
+    .value = status
+
+  document
+    .getElementById('saveBtn')
+    .innerHTML = 'Update Data'
+
+  window.scrollTo({
+    top:0,
+    behavior:'smooth'
+  })
+}
+
+
+// ======================
+// HAPUS DATA
+// ======================
+
+async function deleteStudent(id){
+
+  const confirmDelete = confirm(
+    'Yakin ingin menghapus data?'
+  )
+
+  if(!confirmDelete){
+    return
+  }
+
+  try {
+
+    const response = await fetch(
+      `${BASE_URL}/students/${id}`,
+      {
+        method:'DELETE'
+      }
+    )
+
+    if(!response.ok){
+
+      alert('Gagal menghapus data')
+      return
+    }
+
+    alert('Data berhasil dihapus')
+
+    loadStudents()
+
+  } catch(error){
+
+    alert('Server Error')
+  }
+}
+
+
+// ======================
+// RESET FORM
+// ======================
+
+function resetForm(){
+
+  editId = null
+
+  document
+    .getElementById('nisn')
+    .value = ''
+
+  document
+    .getElementById('nama')
+    .value = ''
+
+  document
+    .getElementById('kelas')
+    .value = ''
+
+  document
+    .getElementById('status')
+    .value = 'LULUS'
+
+  document
+    .getElementById('saveBtn')
+    .innerHTML = 'Simpan Data'
+}
+
+
+// ======================
+// MESSAGE
+// ======================
+
+function showMessage(text, success){
+
+  const message = document
+    .getElementById('message')
+
+  message.style.display = 'block'
+
+  message.className = success
+    ? 'message success'
+    : 'message fail'
+
+  message.innerHTML = text
+}
+
+
+// ======================
+// LOGOUT
+// ======================
+
+function logout(){
+
+  window.location.href = 'index.html'
+}
+
+</script>
+
+</body>
+</html>

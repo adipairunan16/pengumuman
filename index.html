@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengumuman Kelulusan</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      min-height:100vh;
+      background:linear-gradient(135deg,#1e3c72,#2a5298);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+    }
+
+    .container{
+      width:100%;
+      max-width:500px;
+    }
+
+    .card{
+      background:#fff;
+      padding:35px;
+      border-radius:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.2);
+      text-align:center;
+    }
+
+    .title{
+      font-size:32px;
+      font-weight:bold;
+      color:#1e3c72;
+      margin-bottom:10px;
+    }
+
+    .subtitle{
+      color:#666;
+      margin-bottom:25px;
+    }
+
+    input{
+      width:100%;
+      padding:14px;
+      border:2px solid #ddd;
+      border-radius:12px;
+      margin-bottom:15px;
+      font-size:16px;
+      transition:0.3s;
+    }
+
+    input:focus{
+      outline:none;
+      border-color:#1e3c72;
+    }
+
+    button{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      background:#1e3c72;
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#16325c;
+    }
+
+    .result{
+      margin-top:20px;
+      padding:20px;
+      border-radius:15px;
+      display:none;
+    }
+
+    .success{
+      background:#e7ffe7;
+      border:2px solid #34c759;
+      color:#155724;
+    }
+
+    .fail{
+      background:#ffe7e7;
+      border:2px solid #ff3b30;
+      color:#721c24;
+    }
+
+    .nama{
+      font-size:24px;
+      font-weight:bold;
+      margin-bottom:10px;
+    }
+
+    .kelas{
+      font-size:18px;
+      margin-bottom:10px;
+    }
+
+    .status{
+      font-size:30px;
+      font-weight:bold;
+    }
+
+    /* LOGIN BUTTON */
+
+    .admin-btn{
+      position:fixed;
+      top:20px;
+      right:20px;
+      width:auto;
+      padding:12px 20px;
+      background:#fff;
+      color:#1e3c72;
+      border:none;
+      border-radius:12px;
+      font-weight:bold;
+      cursor:pointer;
+      box-shadow:0 5px 15px rgba(0,0,0,0.2);
+      z-index:1000;
+    }
+
+    .admin-btn:hover{
+      background:#f0f0f0;
+    }
+
+    /* MODAL */
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.5);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:2000;
+    }
+
+    .modal-content{
+      background:#fff;
+      width:100%;
+      max-width:450px;
+      padding:30px;
+      border-radius:20px;
+      position:relative;
+      animation:popup 0.3s ease;
+    }
+
+    @keyframes popup{
+
+      from{
+        transform:scale(0.8);
+        opacity:0;
+      }
+
+      to{
+        transform:scale(1);
+        opacity:1;
+      }
+    }
+
+    .close{
+      position:absolute;
+      top:10px;
+      right:15px;
+      font-size:30px;
+      cursor:pointer;
+      color:#888;
+    }
+
+    .close:hover{
+      color:#000;
+    }
+
+    .section-title{
+      font-size:24px;
+      font-weight:bold;
+      color:#1e3c72;
+      text-align:center;
+      margin-bottom:20px;
+    }
+
+    .hidden{
+      display:none;
+    }
+
+    /* ======================
+       AI ASSISTANT
+    ====================== */
+
+    #aiButton{
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      width:65px;
+      height:65px;
+      border-radius:50%;
+      background:#1e3c72;
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-size:30px;
+      cursor:pointer;
+      box-shadow:0 5px 20px rgba(0,0,0,0.3);
+      z-index:3000;
+    }
+
+    #aiButton:hover{
+      background:#16325c;
+    }
+
+    #aiChat{
+      position:fixed;
+      bottom:95px;
+      right:20px;
+      width:360px;
+      height:500px;
+      background:white;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,0.3);
+      display:flex;
+      flex-direction:column;
+      z-index:3000;
+    }
+
+    #aiHeader{
+      background:#1e3c72;
+      color:white;
+      padding:15px;
+      font-weight:bold;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    #aiHeader span{
+      cursor:pointer;
+      font-size:20px;
+    }
+
+    #aiMessages{
+      flex:1;
+      padding:15px;
+      overflow-y:auto;
+      background:#f5f5f5;
+    }
+
+    .user-message,
+    .bot-message{
+      padding:12px;
+      border-radius:12px;
+      margin-bottom:12px;
+      max-width:85%;
+      word-wrap:break-word;
+    }
+
+    .user-message{
+      background:#1e3c72;
+      color:white;
+      margin-left:auto;
+    }
+
+    .bot-message{
+      background:#e5e5ea;
+      color:black;
+    }
+
+    #aiInputArea{
+      display:flex;
+      gap:10px;
+      padding:10px;
+      border-top:1px solid #ddd;
+    }
+
+    #aiInput{
+      flex:1;
+      margin:0;
+    }
+
+    #sendAiBtn{
+      width:auto;
+      padding:0 20px;
+    }
+
+    .ai-hidden{
+      display:none !important;
+    }
+
+    @media(max-width:500px){
+
+      .card{
+        padding:25px;
+      }
+
+      .title{
+        font-size:26px;
+      }
+
+      .status{
+        font-size:24px;
+      }
+
+      .admin-btn{
+        top:15px;
+        right:15px;
+      }
+
+      #aiChat{
+        width:95%;
+        right:2.5%;
+        height:80vh;
+      }
+
+      #aiButton{
+        width:60px;
+        height:60px;
+      }
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <!-- LOGIN BUTTON -->
+  <button class="admin-btn" onclick="openLogin()">
+    Admin Login
+  </button>
+
+
+  <!-- CEK KELULUSAN -->
+  <div class="container">
+
+    <div class="card">
+
+      <div class="title">
+        PENGUMUMAN KELULUSAN
+      </div>
+
+      <div class="subtitle">
+        Masukkan NISN untuk melihat hasil kelulusan
+      </div>
+
+      <input
+        type="text"
+        id="nisn"
+        placeholder="Masukkan NISN"
+      >
+
+      <button onclick="cekKelulusan()">
+        Cek Kelulusan
+      </button>
+
+      <div id="result" class="result"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="modal hidden">
+
+    <div class="modal-content">
+
+      <span class="close" onclick="closeLogin()">
+        &times;
+      </span>
+
+      <div class="section-title">
+        Login Admin
+      </div>
+
+      <input
+        type="text"
+        id="username"
+        placeholder="Username"
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+      >
+
+      <button onclick="loginAdmin()">
+        Login
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- AI ASSISTANT -->
+
+  <div id="aiButton" onclick="toggleAI()">
+    🤖
+  </div>
+
+  <div id="aiChat" class="ai-hidden">
+
+    <div id="aiHeader">
+      Tanya Cintaku
+
+      <span onclick="toggleAI()">
+        ✖
+      </span>
+    </div>
+
+    <div id="aiMessages">
+
+      <div class="bot-message">
+        Halo 👋<br>
+        Saya Cintaku.<br>
+        Ada yang bisa saya bantu?
+      </div>
+
+    </div>
+
+    <div id="aiInputArea">
+
+      <input
+        type="text"
+        id="aiInput"
+        placeholder="Tulis pesan..."
+      >
+
+      <button
+        id="sendAiBtn"
+        onclick="sendAI()"
+      >
+        Kirim
+      </button>
+
+    </div>
+
+  </div>
+
+
+<script>
+
+const BASE_URL = 'http://127.0.0.1:8000/api'
+
+
+// ======================
+// OPEN LOGIN
+// ======================
+
+function openLogin(){
+
+  document
+    .getElementById('loginModal')
+    .classList.remove('hidden')
+}
+
+
+// ======================
+// CLOSE LOGIN
+// ======================
+
+function closeLogin(){
+
+  document
+    .getElementById('loginModal')
+    .classList.add('hidden')
+}
+
+
+// ======================
+// CEK KELULUSAN
+// ======================
+
+async function cekKelulusan(){
+
+  const nisn = document
+    .getElementById('nisn')
+    .value.trim()
+
+  const result = document
+    .getElementById('result')
+
+  if(!nisn){
+
+    result.style.display = 'block'
+
+    result.className = 'result fail'
+
+    result.innerHTML = `
+      <div class="status">
+        Masukkan NISN
+      </div>
+    `
+
+    return
+  }
+
+  try {
+
+    const response = await fetch(
+      `${BASE_URL}/students/${nisn}`
+    )
+
+    const data = await response.json()
+
+    if(!response.ok){
+
+      result.style.display = 'block'
+
+      result.className = 'result fail'
+
+      result.innerHTML = `
+        <div class="status">
+          ${data.message}
+        </div>
+      `
+
+      return
+    }
+
+    const isLulus = data.status === 'LULUS'
+
+    result.style.display = 'block'
+
+    result.className = isLulus
+      ? 'result success'
+      : 'result fail'
+
+    result.innerHTML = `
+      <div class="nama">
+        ${data.nama}
+      </div>
+
+      <div class="kelas">
+        ${data.kelas}
+      </div>
+
+      <div class="status">
+        ${data.status}
+      </div>
+    `
+
+  } catch(error){
+
+    result.style.display = 'block'
+
+    result.className = 'result fail'
+
+    result.innerHTML = `
+      <div class="status">
+        Server Error
+      </div>
+    `
+  }
+}
+
+
+// ======================
+// LOGIN ADMIN
+// ======================
+
+async function loginAdmin(){
+
+  const username = document
+    .getElementById('username')
+    .value
+
+  const password = document
+    .getElementById('password')
+    .value
+
+  try {
+
+    const response = await fetch(
+      `${BASE_URL}/login`,
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          username,
+          password
+        })
+      }
+    )
+
+    const data = await response.json()
+
+    if(!response.ok){
+
+      alert(data.message)
+      return
+    }
+
+    alert('Login berhasil')
+
+    window.location.href = 'admin.html'
+
+  } catch(error){
+
+    alert('Server Error')
+  }
+}
+
+
+// ======================
+// OPEN CLOSE AI
+// ======================
+
+function toggleAI(){
+
+  document
+    .getElementById('aiChat')
+    .classList.toggle('ai-hidden')
+}
+
+
+// ======================
+// SEND AI
+// ======================
+
+async function sendAI(){
+
+  const input = document
+    .getElementById('aiInput')
+
+  const messages = document
+    .getElementById('aiMessages')
+
+  const text = input.value.trim()
+
+  if(!text){
+    return
+  }
+
+  // USER MESSAGE
+  messages.innerHTML += `
+    <div class="user-message">
+      ${text}
+    </div>
+  `
+
+  input.value = ''
+
+  messages.scrollTop = messages.scrollHeight
+
+  try {
+
+    const response = await fetch(
+      `${BASE_URL}/ai`,
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          model:'gemma:2b',
+          prompt:text,
+          stream:false
+        })
+      }
+    )
+
+    const data = await response.json()
+
+    messages.innerHTML += `
+      <div class="bot-message">
+        ${data.response}
+      </div>
+    `
+
+    messages.scrollTop = messages.scrollHeight
+
+  } catch(error){
+
+    messages.innerHTML += `
+      <div class="bot-message">
+        AI Server Error
+      </div>
+    `
+  }
+}
+
+</script>
+
+</body>
+</html>
