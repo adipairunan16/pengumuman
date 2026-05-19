@@ -210,7 +210,12 @@
     >
       Logout
     </button>
-
+<button
+  class="btn-danger"
+  onclick="hapusSemuaData()"
+>
+  Hapus Semua Data
+</button>
     <div id="message" class="message"></div>
 
   </div>
@@ -237,7 +242,46 @@ const BASE_URL = '/api'
 
 let editId = null
 
+// ======================
+// HAPUS SEMUA DATA
+// ======================
 
+async function hapusSemuaData(){
+
+  const confirmDelete = confirm(
+    'Yakin ingin menghapus semua data siswa?'
+  )
+
+  if(!confirmDelete){
+    return
+  }
+
+  try {
+
+    const response = await fetch(
+      `${BASE_URL}/students/all`,
+      {
+        method:'DELETE'
+      }
+    )
+
+    const result = await response.json()
+
+    if(!response.ok){
+
+      alert(result.message)
+      return
+    }
+
+    alert(result.message)
+
+    loadStudents()
+
+  } catch(error){
+
+    alert('Server Error')
+  }
+}
 // ======================
 // TAMBAH SISWA
 // ======================

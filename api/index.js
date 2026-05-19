@@ -259,7 +259,21 @@ module.exports = async (req, res) => {
     return res.status(404).json({
       message:'Route tidak ditemukan'
     })
+// ======================
+// DELETE ALL STUDENTS
+// ======================
 
+if(
+  req.method === 'DELETE' &&
+  path === '/api/students/all'
+){
+
+  await Student.deleteMany({})
+
+  return res.status(200).json({
+    message:'Semua data berhasil dihapus'
+  })
+}
   } catch(err){
 
     return res.status(500).json({
