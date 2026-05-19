@@ -403,7 +403,7 @@ async function loadStudents(){
           <button
             class="btn-warning"
             onclick="editStudent(
-              '${student.id}',
+              '${student.nisn}',
               '${student.nisn}',
               '${student.nama}',
               '${student.kelas}',
@@ -415,7 +415,7 @@ async function loadStudents(){
 
           <button
             class="btn-danger"
-            onclick="deleteStudent('${student.id}')"
+            onclick="deleteStudent('${student.nisn}')"
           >
             Hapus
           </button>
