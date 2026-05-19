@@ -194,7 +194,7 @@ module.exports = async (req, res) => {
 
       const id = req.url.split('/').pop()
 
-      await Student.findByIdAndUpdate(
+      await Student.findOneAndUpdate(
         { nisn },
         {
           nisn:req.body.nisn,
@@ -222,7 +222,7 @@ module.exports = async (req, res) => {
 
       const id = req.url.split('/').pop()
 
-      await Student.findByIdAndDelete({ nisn })
+      await Student.findOneAndDelete({ nisn })
 
       return res.status(200).json({
         message:'Data berhasil dihapus'
