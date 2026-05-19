@@ -607,7 +607,11 @@ async function loginAdmin(){
       alert(data.message)
       return
     }
-
+ // SIMPAN STATUS LOGIN
+    localStorage.setItem(
+      'isLogin',
+      'true'
+    )
     alert('Login berhasil')
 
     window.location.href = '/admin.html'

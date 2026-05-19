@@ -206,6 +206,13 @@
       </option>
 
     </select>
+
+    <button
+      id="saveBtn"
+      onclick="tambahSiswa()"
+    >
+      Simpan Data
+    </button>
 <div class="upload-box">
 
   <input
@@ -222,13 +229,6 @@
   </div>
 
 </div>
-    <button
-      id="saveBtn"
-      onclick="tambahSiswa()"
-    >
-      Simpan Data
-    </button>
-
     <button
       class="btn-success"
       onclick="loadStudents()"
@@ -272,7 +272,18 @@
 
 
 <script>
+// ======================
+// CEK LOGIN
+// ======================
 
+if(
+  localStorage.getItem('isLogin')
+  !== 'true'
+){
+
+  window.location.href =
+    'index.html'
+}
 const BASE_URL = '/api'
 
 let editId = null
@@ -744,7 +755,12 @@ function showMessage(text, success){
 
 function logout(){
 
-  window.location.href = 'index.html'
+  localStorage.removeItem(
+    'isLogin'
+  )
+
+  window.location.href =
+    'index.html'
 }
 
 </script>
