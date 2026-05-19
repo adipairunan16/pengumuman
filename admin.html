@@ -273,17 +273,33 @@
 
 <script>
 // ======================
+// ======================
 // CEK LOGIN
 // ======================
 
-if(
-  localStorage.getItem('isLogin')
-  !== 'true'
-){
+function checkLogin(){
 
-  window.location.href =
-    'index.html'
+  if(
+    localStorage.getItem('isLogin')
+    !== 'true'
+  ){
+
+    window.location.replace(
+      '/index.html'
+    )
+  }
 }
+
+checkLogin()
+
+// CEK SAAT BACK/FORWARD
+window.addEventListener(
+  'pageshow',
+  function(){
+
+    checkLogin()
+  }
+)
 const BASE_URL = '/api'
 
 let editId = null
@@ -750,6 +766,7 @@ function showMessage(text, success){
 
 
 // ======================
+// ======================
 // LOGOUT
 // ======================
 
@@ -759,8 +776,10 @@ function logout(){
     'isLogin'
   )
 
-  window.location.href =
-    'index.html'
+  // HAPUS HISTORY
+  window.location.replace(
+    '/index.html'
+  )
 }
 
 </script>
