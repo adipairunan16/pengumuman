@@ -280,7 +280,7 @@
 function checkLogin(){
 
   if(
-    localStorage.getItem('isLogin')
+    sessionStorage.getItem('isLogin')
     !== 'true'
   ){
 
@@ -292,12 +292,24 @@ function checkLogin(){
 
 checkLogin()
 
-// CEK SAAT BACK/FORWARD
+// ======================
+// DETEKSI BACK/FORWARD
+// ======================
+
 window.addEventListener(
   'pageshow',
-  function(){
+  function(event){
 
-    checkLogin()
+    if(event.persisted){
+
+      sessionStorage.removeItem(
+        'isLogin'
+      )
+
+      window.location.replace(
+        '/index.html'
+      )
+    }
   }
 )
 const BASE_URL = '/api'
@@ -772,7 +784,7 @@ function showMessage(text, success){
 
 function logout(){
 
-  localStorage.removeItem(
+  sessionStorage.removeItem(
     'isLogin'
   )
 
