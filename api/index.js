@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const XLSX = require('xlsx')
 
 // ======================
 // CONNECT DB
@@ -162,7 +163,51 @@ module.exports = async (req, res) => {
       return res.status(200).json(student)
     }
 
+// ======================
+// UPLOAD EXCEL
+// ======================
 
+if(
+  req.method === 'POST' &&
+  path === '/api/upload-excel'
+){
+
+  const chunks = []
+
+  await new Promise(resolve => {
+
+    req.on('data', chunk => {
+      chunks.push(chunk)
+    })
+
+    req.on('end', resolve)
+  })
+
+  const buffer = Buffer.concat(chunks)
+
+  const workbook = XLSX.read(buffer, {
+    type:'buffer'
+  })
+
+  const sheetName = workbook.SheetNames[0]
+
+  const sheet = workbook.Sheets[sheetName]
+
+  const data = XLSX.utils.sheet_to_json(sheet)
+
+  const students = data.map(item => ({
+    nisn:String(item.nisn || ''),
+    nama:String(item.nama || ''),
+    kelas:String(item.kelas || ''),
+    status:String(item.status || '')
+  }))
+
+  await Student.insertMany(students)
+
+  return res.status(200).json({
+    message:'Data excel berhasil diupload'
+  })
+}
     // ======================
     // ADD STUDENT
     // ======================

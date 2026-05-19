@@ -208,6 +208,18 @@
       class="btn-danger"
       onclick="logout()"
     >
+    <input
+  type="file"
+  id="excelFile"
+  accept=".xlsx,.xls"
+>
+
+<button
+  class="btn-success"
+  onclick="uploadExcel()"
+>
+  Upload Excel
+</button>
       Logout
     </button>
 <button
@@ -242,6 +254,56 @@ const BASE_URL = '/api'
 
 let editId = null
 
+// ======================
+// UPLOAD EXCEL
+// ======================
+
+async function uploadExcel(){
+
+  const fileInput = document
+    .getElementById('excelFile')
+
+  const file = fileInput.files[0]
+
+  if(!file){
+
+    alert('Pilih file excel terlebih dahulu')
+    return
+  }
+
+  const formData = new FormData()
+
+  formData.append('file', file)
+
+  try {
+
+    const response = await fetch(
+      `${BASE_URL}/upload-excel`,
+      {
+        method:'POST',
+        body:formData
+      }
+    )
+
+    const result = await response.json()
+
+    if(!response.ok){
+
+      alert(result.message)
+      return
+    }
+
+    alert(result.message)
+
+    loadStudents()
+
+    fileInput.value = ''
+
+  } catch(error){
+
+    alert('Server Error')
+  }
+}
 // ======================
 // HAPUS SEMUA DATA
 // ======================
