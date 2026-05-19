@@ -188,56 +188,64 @@ module.exports = async (req, res) => {
     // ======================
 
     if(
-      req.method === 'PUT' &&
-      req.url.startsWith('/api/students/')
-    ){
+  req.method === 'PUT' &&
+  path.startsWith('/api/students/')
+){
 
-      const id = req.url.split('/').pop()
+  const nisn = path.split('/').pop()
 
-      await Student.findOneAndUpdate(
-        { nisn },
-        {
-          nisn:req.body.nisn,
-          nama:req.body.nama,
-          kelas:req.body.kelas,
-          status:req.body.status
-        }
-      )
+  console.log('UPDATE:', nisn)
 
-      return res.status(200).json({
-        message:'Data berhasil diupdate'
-      })
+  const updated = await Student.findOneAndUpdate(
+    { nisn },
+    {
+      nisn:req.body.nisn,
+      nama:req.body.nama,
+      kelas:req.body.kelas,
+      status:req.body.status
     }
+  )
 
+  if(!updated){
 
+    return res.status(404).json({
+      message:'Data tidak ditemukan'
+    })
+  }
+
+  return res.status(200).json({
+    message:'Data berhasil diupdate'
+  })
+}
 
     // ======================
     // DELETE STUDENT
     // ======================
 
-    if(
-      req.method === 'DELETE' &&
-      req.url.startsWith('/api/students/')
-    ){
+if(
+  req.method === 'DELETE' &&
+  path.startsWith('/api/students/')
+){
 
-      const id = req.url.split('/').pop()
+  const nisn = path.split('/').pop()
 
-      await Student.findOneAndDelete({ nisn })
+  console.log('DELETE:', nisn)
 
-      return res.status(200).json({
-        message:'Data berhasil dihapus'
-      })
-    }
+  const deleted = await Student.findOneAndDelete(
+    { nisn }
+  )
 
-
-
-    // ======================
-    // NOT FOUND
-    // ======================
+  if(!deleted){
 
     return res.status(404).json({
-      message:'Route tidak ditemukan'
+      message:'Data tidak ditemukan'
     })
+  }
+
+  return res.status(200).json({
+    message:'Data berhasil dihapus'
+  })
+}
 
   } catch(err){
 
