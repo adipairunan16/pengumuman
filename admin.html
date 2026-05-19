@@ -124,7 +124,24 @@
       border:2px solid #34c759;
       color:#155724;
     }
+.upload-box{
+  background:#34c759;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:10px;
+}
 
+.template-link{
+  margin-top:10px;
+  text-align:left;
+}
+
+.template-link a{
+  color:white;
+  font-size:14px;
+  text-decoration:underline;
+  cursor:pointer;
+}
     .fail{
       background:#ffe7e7;
       border:2px solid #ff3b30;
@@ -189,7 +206,22 @@
       </option>
 
     </select>
+<div class="upload-box">
 
+  <input
+    type="file"
+    id="excelFile"
+    accept=".xlsx,.xls"
+    onchange="uploadExcel()"
+  >
+
+  <div class="template-link">
+    <a href="#" onclick="downloadTemplate()">
+      Download Template Excel
+    </a>
+  </div>
+
+</div>
     <button
       id="saveBtn"
       onclick="tambahSiswa()"
@@ -208,18 +240,9 @@
       class="btn-danger"
       onclick="logout()"
     >
-    <input
-  type="file"
-  id="excelFile"
-  accept=".xlsx,.xls"
->
+   
 
-<button
-  class="btn-success"
-  onclick="uploadExcel()"
->
-  Upload Excel
-</button>
+
       Logout
     </button>
 <button
@@ -303,6 +326,49 @@ async function uploadExcel(){
 
     alert('Server Error')
   }
+}
+
+// ======================
+// DOWNLOAD TEMPLATE XLSX
+// ======================
+
+function downloadTemplate(){
+
+  const data = [
+    {
+      nisn:'12345',
+      nama:'Andi',
+      kelas:'XII IPA 1',
+      status:'LULUS'
+    },
+    {
+      nisn:'67890',
+      nama:'Budi',
+      kelas:'XII IPA 2',
+      status:'TIDAK LULUS'
+    }
+  ]
+
+  // Buat worksheet
+  const worksheet =
+    XLSX.utils.json_to_sheet(data)
+
+  // Buat workbook
+  const workbook =
+    XLSX.utils.book_new()
+
+  // Tambahkan sheet
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    'Data Siswa'
+  )
+
+  // Download file excel
+  XLSX.writeFile(
+    workbook,
+    'template_data_siswa.xlsx'
+  )
 }
 // ======================
 // HAPUS SEMUA DATA
@@ -682,6 +748,6 @@ function logout(){
 }
 
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </body>
 </html>
