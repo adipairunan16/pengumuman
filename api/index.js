@@ -61,23 +61,126 @@ module.exports = async (req, res) => {
 
 
     // ======================
+    // UPLOAD EXCEL
+    // ======================
+
+    if(
+      req.method === 'POST' &&
+      path === '/api/upload-excel'
+    ){
+
+      const chunks = []
+
+      await new Promise(resolve => {
+
+        req.on('data', chunk => {
+          chunks.push(chunk)
+        })
+
+        req.on('end', resolve)
+      })
+
+      const buffer = Buffer.concat(chunks)
+
+      // Cari file excel
+      const start = buffer.indexOf(
+        Buffer.from('PK')
+      )
+
+      if(start === -1){
+
+        return res.status(400).json({
+          message:'File excel tidak valid'
+        })
+      }
+
+      const excelBuffer = buffer.slice(start)
+
+      const workbook = XLSX.read(
+        excelBuffer,
+        {
+          type:'buffer'
+        }
+      )
+
+      const sheetName = workbook.SheetNames[0]
+
+      const sheet =
+        workbook.Sheets[sheetName]
+
+      const data =
+        XLSX.utils.sheet_to_json(sheet)
+
+      const students = data.map(item => ({
+
+        nisn:String(
+          item.nisn ||
+          item.NISN ||
+          ''
+        ).trim(),
+
+        nama:String(
+          item.nama ||
+          item.Nama ||
+          ''
+        ).trim(),
+
+        kelas:String(
+          item.kelas ||
+          item.Kelas ||
+          ''
+        ).trim(),
+
+        status:String(
+          item.status ||
+          item.Status ||
+          ''
+        ).trim()
+
+      }))
+
+      // Hapus data kosong
+      const filteredStudents =
+        students.filter(
+          s => s.nisn && s.nama
+        )
+
+      await Student.insertMany(
+        filteredStudents
+      )
+
+      return res.status(200).json({
+        message:'Data excel berhasil diupload'
+      })
+    }
+
+
+    // ======================
     // PARSE BODY
     // ======================
 
-    let body = ''
+    req.body = {}
 
-    await new Promise(resolve => {
+    if(
+      req.method !== 'GET' &&
+      path !== '/api/upload-excel'
+    ){
 
-      req.on('data', chunk => {
-        body += chunk
+      let body = ''
+
+      await new Promise(resolve => {
+
+        req.on('data', chunk => {
+          body += chunk
+        })
+
+        req.on('end', resolve)
       })
 
-      req.on('end', resolve)
-    })
-
-    req.body = body
-      ? JSON.parse(body)
-      : {}
+      req.body = body
+        ? JSON.parse(body)
+        : {}
+    }
 
 
     // ======================
@@ -151,7 +254,8 @@ module.exports = async (req, res) => {
 
       const nisn = path.split('/').pop()
 
-      const student = await Student.findOne({ nisn })
+      const student =
+        await Student.findOne({ nisn })
 
       if(!student){
 
@@ -163,51 +267,7 @@ module.exports = async (req, res) => {
       return res.status(200).json(student)
     }
 
-// ======================
-// UPLOAD EXCEL
-// ======================
 
-if(
-  req.method === 'POST' &&
-  path === '/api/upload-excel'
-){
-
-  const chunks = []
-
-  await new Promise(resolve => {
-
-    req.on('data', chunk => {
-      chunks.push(chunk)
-    })
-
-    req.on('end', resolve)
-  })
-
-  const buffer = Buffer.concat(chunks)
-
-  const workbook = XLSX.read(buffer, {
-    type:'buffer'
-  })
-
-  const sheetName = workbook.SheetNames[0]
-
-  const sheet = workbook.Sheets[sheetName]
-
-  const data = XLSX.utils.sheet_to_json(sheet)
-
-  const students = data.map(item => ({
-    nisn:String(item.nisn || ''),
-    nama:String(item.nama || ''),
-    kelas:String(item.kelas || ''),
-    status:String(item.status || '')
-  }))
-
-  await Student.insertMany(students)
-
-  return res.status(200).json({
-    message:'Data excel berhasil diupload'
-  })
-}
     // ======================
     // ADD STUDENT
     // ======================
@@ -300,7 +360,9 @@ if(
       const nisn = path.split('/').pop()
 
       const deleted =
-        await Student.findOneAndDelete({ nisn })
+        await Student.findOneAndDelete(
+          { nisn }
+        )
 
       if(!deleted){
 
