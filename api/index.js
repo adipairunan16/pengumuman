@@ -47,6 +47,18 @@ module.exports = async (req, res) => {
     await connectDB()
 
     // ======================
+    // URL PATH
+    // ======================
+
+    const url = new URL(
+      req.url,
+      `http://${req.headers.host}`
+    )
+
+    const path = url.pathname
+
+
+    // ======================
     // PARSE BODY
     // ======================
 
@@ -66,18 +78,16 @@ module.exports = async (req, res) => {
       : {}
 
 
-
     // ======================
     // TEST API
     // ======================
 
-    if(req.url === '/api'){
+    if(path === '/api'){
 
       return res
         .status(200)
         .send('API hidup')
     }
-
 
 
     // ======================
@@ -87,8 +97,8 @@ module.exports = async (req, res) => {
     if(
       req.method === 'POST' &&
       (
-        req.url === '/login' ||
-        req.url === '/api/login'
+        path === '/login' ||
+        path === '/api/login'
       )
     ){
 
@@ -110,7 +120,6 @@ module.exports = async (req, res) => {
     }
 
 
-
     // ======================
     // GET ALL STUDENTS
     // ======================
@@ -118,8 +127,8 @@ module.exports = async (req, res) => {
     if(
       req.method === 'GET' &&
       (
-        req.url === '/students' ||
-        req.url === '/api/students'
+        path === '/students' ||
+        path === '/api/students'
       )
     ){
 
@@ -129,17 +138,16 @@ module.exports = async (req, res) => {
     }
 
 
-
     // ======================
     // GET BY NISN
     // ======================
 
     if(
       req.method === 'GET' &&
-      req.url.startsWith('/api/students/')
+      path.startsWith('/api/students/')
     ){
 
-      const nisn = req.url.split('/').pop()
+      const nisn = path.split('/').pop()
 
       const student = await Student.findOne({ nisn })
 
@@ -154,7 +162,6 @@ module.exports = async (req, res) => {
     }
 
 
-
     // ======================
     // ADD STUDENT
     // ======================
@@ -162,8 +169,8 @@ module.exports = async (req, res) => {
     if(
       req.method === 'POST' &&
       (
-        req.url === '/students' ||
-        req.url === '/api/students'
+        path === '/students' ||
+        path === '/api/students'
       )
     ){
 
@@ -182,70 +189,76 @@ module.exports = async (req, res) => {
     }
 
 
-
     // ======================
     // UPDATE STUDENT
     // ======================
 
     if(
-  req.method === 'PUT' &&
-  path.startsWith('/api/students/')
-){
+      req.method === 'PUT' &&
+      path.startsWith('/api/students/')
+    ){
 
-  const nisn = path.split('/').pop()
+      const nisn = path.split('/').pop()
 
-  console.log('UPDATE:', nisn)
+      const updated =
+        await Student.findOneAndUpdate(
+          { nisn },
+          {
+            nisn:req.body.nisn,
+            nama:req.body.nama,
+            kelas:req.body.kelas,
+            status:req.body.status
+          },
+          { new:true }
+        )
 
-  const updated = await Student.findOneAndUpdate(
-    { nisn },
-    {
-      nisn:req.body.nisn,
-      nama:req.body.nama,
-      kelas:req.body.kelas,
-      status:req.body.status
+      if(!updated){
+
+        return res.status(404).json({
+          message:'Data tidak ditemukan'
+        })
+      }
+
+      return res.status(200).json({
+        message:'Data berhasil diupdate'
+      })
     }
-  )
 
-  if(!updated){
-
-    return res.status(404).json({
-      message:'Data tidak ditemukan'
-    })
-  }
-
-  return res.status(200).json({
-    message:'Data berhasil diupdate'
-  })
-}
 
     // ======================
     // DELETE STUDENT
     // ======================
 
-if(
-  req.method === 'DELETE' &&
-  path.startsWith('/api/students/')
-){
+    if(
+      req.method === 'DELETE' &&
+      path.startsWith('/api/students/')
+    ){
 
-  const nisn = path.split('/').pop()
+      const nisn = path.split('/').pop()
 
-  console.log('DELETE:', nisn)
+      const deleted =
+        await Student.findOneAndDelete({ nisn })
 
-  const deleted = await Student.findOneAndDelete(
-    { nisn }
-  )
+      if(!deleted){
 
-  if(!deleted){
+        return res.status(404).json({
+          message:'Data tidak ditemukan'
+        })
+      }
+
+      return res.status(200).json({
+        message:'Data berhasil dihapus'
+      })
+    }
+
+
+    // ======================
+    // NOT FOUND
+    // ======================
 
     return res.status(404).json({
-      message:'Data tidak ditemukan'
+      message:'Route tidak ditemukan'
     })
-  }
-
-  return res.status(200).json({
-    message:'Data berhasil dihapus'
-  })
-}
 
   } catch(err){
 
