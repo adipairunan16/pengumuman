@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
 <title>Daftar Sekolah</title>
 
@@ -78,6 +82,7 @@ button{
   font-size:16px;
   font-weight:bold;
   cursor:pointer;
+  transition:0.3s;
 }
 
 button:hover{
@@ -116,8 +121,22 @@ button:hover{
   text-decoration:none;
 }
 
+#loginButtonBox{
+  display:none;
+  margin-top:15px;
+}
+
+.login-admin-btn{
+  background:#34c759;
+}
+
+.login-admin-btn:hover{
+  background:#28a745;
+}
+
 </style>
 </head>
+
 <body>
 
 <div class="card">
@@ -152,14 +171,34 @@ button:hover{
     Daftar Sekolah
   </button>
 
-  <div id="message"
-  class="message"></div>
+  <div
+    id="message"
+    class="message"
+  ></div>
+
+  <!-- TOMBOL LOGIN -->
+  <div id="loginButtonBox">
+
+    <a href="/index.html">
+
+      <button
+        class="login-admin-btn"
+      >
+        Login Admin
+      </button>
+
+    </a>
+
+  </div>
 
   <div class="login-link">
+
     Sudah punya akun?
+
     <a href="/index.html">
       Login
     </a>
+
   </div>
 
 </div>
@@ -167,6 +206,10 @@ button:hover{
 <script>
 
 const BASE_URL = '/api'
+
+// ======================
+// REGISTER ADMIN
+// ======================
 
 async function registerAdmin(){
 
@@ -242,12 +285,18 @@ async function registerAdmin(){
       true
     )
 
-    setTimeout(() => {
+    // RESET FORM
+    document
+      .getElementById('school')
+      .value = ''
 
-      window.location.href =
-        '/index.html'
+    document
+      .getElementById('username')
+      .value = ''
 
-    }, 1500)
+    document
+      .getElementById('password')
+      .value = ''
 
   } catch(error){
 
@@ -258,6 +307,10 @@ async function registerAdmin(){
   }
 }
 
+// ======================
+// SHOW MESSAGE
+// ======================
+
 function showMessage(
   text,
   success
@@ -266,6 +319,12 @@ function showMessage(
   const message =
     document
     .getElementById('message')
+
+  const loginButtonBox =
+    document
+    .getElementById(
+      'loginButtonBox'
+    )
 
   message.style.display =
     'block'
@@ -276,6 +335,18 @@ function showMessage(
     : 'message fail'
 
   message.innerHTML = text
+
+  // TAMPILKAN TOMBOL LOGIN
+  if(success){
+
+    loginButtonBox.style.display =
+      'block'
+
+  }else{
+
+    loginButtonBox.style.display =
+      'none'
+  }
 }
 
 </script>
