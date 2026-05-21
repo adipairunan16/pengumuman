@@ -110,93 +110,93 @@ button:hover{
   color:#721c24;
 }
 
-.login-link{
-  margin-top:20px;
-  text-align:center;
-}
-
-.login-link a{
-  color:#1e3c72;
-  font-weight:bold;
-  text-decoration:none;
-}
-
-#loginButtonBox{
-  display:none;
-  margin-top:15px;
-}
-
-.login-admin-btn{
+.login-btn{
   background:#34c759;
 }
 
-.login-admin-btn:hover{
+.login-btn:hover{
   background:#28a745;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="card">
 
-  <div class="title">
-    DAFTAR SEKOLAH
+  <!-- FORM REGISTER -->
+  <div id="registerForm">
+
+    <div class="title">
+      DAFTAR SEKOLAH
+    </div>
+
+    <div class="subtitle">
+      Buat akun admin sekolah
+    </div>
+
+    <input
+      type="text"
+      id="school"
+      placeholder="Nama Sekolah"
+    >
+
+    <input
+      type="text"
+      id="username"
+      placeholder="Username Admin"
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+    >
+
+    <button onclick="registerAdmin()">
+      Daftar Sekolah
+    </button>
+
+    <div
+      id="message"
+      class="message"
+    ></div>
+
   </div>
 
-  <div class="subtitle">
-    Buat akun admin sekolah
-  </div>
 
-  <input
-    type="text"
-    id="school"
-    placeholder="Nama Sekolah"
-  >
-
-  <input
-    type="text"
-    id="username"
-    placeholder="Username Admin"
-  >
-
-  <input
-    type="password"
-    id="password"
-    placeholder="Password"
-  >
-
-  <button onclick="registerAdmin()">
-    Daftar Sekolah
-  </button>
-
+  <!-- SUCCESS BOX -->
   <div
-    id="message"
-    class="message"
-  ></div>
+    id="successBox"
+    style="display:none;"
+  >
 
-  <!-- TOMBOL LOGIN -->
-  <div id="loginButtonBox">
+    <div class="title">
+      BERHASIL
+    </div>
+
+    <div
+      style="
+        text-align:center;
+        margin-bottom:25px;
+        color:#155724;
+        font-size:18px;
+        font-weight:bold;
+      "
+    >
+
+      Admin sekolah berhasil dibuat
+
+    </div>
 
     <a href="/index.html">
 
-      <button
-        class="login-admin-btn"
-      >
-        Login Admin
+      <button class="login-btn">
+        Lanjut Login Admin
       </button>
 
-    </a>
-
-  </div>
-
-  <div class="login-link">
-
-    Sudah punya akun?
-
-    <a href="/index.html">
-      Login
     </a>
 
   </div>
@@ -280,23 +280,19 @@ async function registerAdmin(){
       return
     }
 
-    showMessage(
-      'Admin berhasil dibuat',
-      true
-    )
-
-    // RESET FORM
+    // SEMBUNYIKAN FORM
     document
-      .getElementById('school')
-      .value = ''
+      .getElementById(
+        'registerForm'
+      )
+      .style.display = 'none'
 
+    // TAMPILKAN SUCCESS
     document
-      .getElementById('username')
-      .value = ''
-
-    document
-      .getElementById('password')
-      .value = ''
+      .getElementById(
+        'successBox'
+      )
+      .style.display = 'block'
 
   } catch(error){
 
@@ -320,12 +316,6 @@ function showMessage(
     document
     .getElementById('message')
 
-  const loginButtonBox =
-    document
-    .getElementById(
-      'loginButtonBox'
-    )
-
   message.style.display =
     'block'
 
@@ -335,18 +325,6 @@ function showMessage(
     : 'message fail'
 
   message.innerHTML = text
-
-  // TAMPILKAN TOMBOL LOGIN
-  if(success){
-
-    loginButtonBox.style.display =
-      'block'
-
-  }else{
-
-    loginButtonBox.style.display =
-      'none'
-  }
 }
 
 </script>
