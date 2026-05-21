@@ -7,7 +7,7 @@
 <meta
   name="viewport"
   content="width=device-width, initial-scale=1.0"
->
+/>
 
 <title>Admin Kelulusan</title>
 
@@ -15,17 +15,17 @@
 <meta
   http-equiv="Cache-Control"
   content="no-cache, no-store, must-revalidate"
->
+/>
 
 <meta
   http-equiv="Pragma"
   content="no-cache"
->
+/>
 
 <meta
   http-equiv="Expires"
   content="0"
->
+/>
 
 <style>
 
@@ -76,6 +76,19 @@ body{
 .school-info{
   text-align:center;
   margin-bottom:20px;
+}
+
+.school-logo{
+  width:120px;
+  height:120px;
+  object-fit:cover;
+  border-radius:20px;
+  border:4px solid #1e3c72;
+  margin-bottom:10px;
+}
+
+.school-name{
+  font-size:20px;
   font-weight:bold;
   color:#1e3c72;
 }
@@ -188,6 +201,32 @@ button:hover{
   color:#1e3c72;
 }
 
+.logo-box{
+  background:#f4f7ff;
+  border:2px dashed #1e3c72;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:20px;
+}
+
+.logo-title{
+  font-weight:bold;
+  color:#1e3c72;
+  margin-bottom:10px;
+  text-align:center;
+}
+
+.preview-logo{
+  width:120px;
+  height:120px;
+  object-fit:cover;
+  border-radius:15px;
+  display:block;
+  margin:auto;
+  margin-top:10px;
+  border:3px solid #1e3c72;
+}
+
 @media(max-width:600px){
 
   .card{
@@ -221,26 +260,65 @@ Tambah, Edit, dan Hapus Data
   id="schoolInfo"
   class="school-info"
 >
+
+<img
+  id="schoolLogo"
+  class="school-logo"
+  src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+/>
+
+<div
+  id="schoolName"
+  class="school-name"
+>
 Loading sekolah...
+</div>
+
+</div>
+
+<!-- UPLOAD LOGO -->
+
+<div class="logo-box">
+
+<div class="logo-title">
+Upload Logo Sekolah
+</div>
+
+<input
+  type="file"
+  id="logoInput"
+  accept="image/*"
+/>
+
+<button onclick="uploadLogo()">
+Upload Logo
+</button>
+
+<img
+  id="previewLogo"
+  class="preview-logo"
+  style="display:none;"
+/>
+
 </div>
 
 <input
   type="text"
   id="nisn"
   placeholder="NISN"
->
+/>
 
 <input
   type="text"
   id="nama"
   placeholder="Nama Siswa"
->
+/>
 
 <input
   type="text"
   id="kelas"
   placeholder="Kelas"
->
+/>
 
 <select id="status">
 
@@ -267,7 +345,7 @@ Simpan Data
   type="file"
   id="excelFile"
   accept=".xlsx,.xls"
->
+/>
 
 <button onclick="uploadExcel()">
 Upload Excel
@@ -358,6 +436,35 @@ async function checkLogin(){
     return
   }
 
+  const school =
+    localStorage.getItem(
+      'school'
+    )
+
+  const logo =
+    localStorage.getItem(
+      'schoolLogo'
+    )
+
+  if(school){
+
+    document
+      .getElementById(
+        'schoolName'
+      )
+      .innerHTML =
+        school
+  }
+
+  if(logo){
+
+    document
+      .getElementById(
+        'schoolLogo'
+      )
+      .src = logo
+  }
+
   try{
 
     const response = await fetch(
@@ -372,41 +479,12 @@ async function checkLogin(){
 
     if(response.status === 401){
 
-      localStorage.removeItem(
-        'token'
-      )
-
-      localStorage.removeItem(
-        'school'
-      )
-
-      window.location.replace(
-        '/index.html'
-      )
-
-      return
-    }
-
-    const school =
-      localStorage.getItem(
-        'school'
-      )
-
-    if(school){
-
-      document
-        .getElementById(
-          'schoolInfo'
-        )
-        .innerHTML =
-          `Sekolah: ${school}`
+      logout()
     }
 
   }catch(err){
 
-    window.location.replace(
-      '/index.html'
-    )
+    logout()
   }
 }
 
@@ -510,18 +588,7 @@ async function loadStudents(){
 
     if(response.status === 401){
 
-      localStorage.removeItem(
-        'token'
-      )
-
-      localStorage.removeItem(
-        'school'
-      )
-
-      window.location.replace(
-        '/index.html'
-      )
-
+      logout()
       return
     }
 
@@ -554,46 +621,46 @@ async function loadStudents(){
 
       <div class="student-card">
 
-      <h3>
-      ${student.nama}
-      </h3>
+        <h3>
+          ${student.nama}
+        </h3>
 
-      <p>
-      <b>NISN:</b>
-      ${student.nisn}
-      </p>
+        <p>
+          <b>NISN:</b>
+          ${student.nisn}
+        </p>
 
-      <p>
-      <b>Kelas:</b>
-      ${student.kelas}
-      </p>
+        <p>
+          <b>Kelas:</b>
+          ${student.kelas}
+        </p>
 
-      <p>
-      <b>Status:</b>
-      ${student.status}
-      </p>
+        <p>
+          <b>Status:</b>
+          ${student.status}
+        </p>
 
-      <button
-        class="btn-warning"
-        onclick="editStudent(
-          '${student.nisn}',
-          '${student.nisn}',
-          '${student.nama}',
-          '${student.kelas}',
-          '${student.status}'
-        )"
-      >
-      Edit
-      </button>
+        <button
+          class="btn-warning"
+          onclick="editStudent(
+            '${student.nisn}',
+            '${student.nisn}',
+            '${student.nama}',
+            '${student.kelas}',
+            '${student.status}'
+          )"
+        >
+          Edit
+        </button>
 
-      <button
-        class="btn-danger"
-        onclick="deleteStudent(
-          '${student.nisn}'
-        )"
-      >
-      Hapus
-      </button>
+        <button
+          class="btn-danger"
+          onclick="deleteStudent(
+            '${student.nisn}'
+          )"
+        >
+          Hapus
+        </button>
 
       </div>
 
@@ -601,6 +668,8 @@ async function loadStudents(){
     })
 
   }catch(err){
+
+    console.log(err)
 
     studentList.innerHTML = `
       <div class="subtitle">
@@ -702,24 +771,17 @@ async function tambahSiswa(){
     const result =
       await response.json()
 
-    if(!response.ok){
-
-      showMessage(
-        result.message,
-        false
-      )
-
-      return
-    }
-
     showMessage(
       result.message,
-      true
+      response.ok
     )
 
-    resetForm()
+    if(response.ok){
 
-    loadStudents()
+      resetForm()
+
+      loadStudents()
+    }
 
   }catch(err){
 
@@ -802,12 +864,6 @@ async function deleteStudent(id){
     const result =
       await response.json()
 
-    if(!response.ok){
-
-      alert(result.message)
-      return
-    }
-
     alert(result.message)
 
     loadStudents()
@@ -849,12 +905,6 @@ async function hapusSemuaData(){
 
     const result =
       await response.json()
-
-    if(!response.ok){
-
-      alert(result.message)
-      return
-    }
 
     alert(result.message)
 
@@ -916,12 +966,6 @@ async function uploadExcel(){
     const result =
       await response.json()
 
-    if(!response.ok){
-
-      alert(result.message)
-      return
-    }
-
     alert(result.message)
 
     fileInput.value = ''
@@ -979,6 +1023,63 @@ function downloadTemplate(){
 }
 
 // ======================
+// UPLOAD LOGO
+// ======================
+
+function uploadLogo(){
+
+  const file =
+    document.getElementById(
+      'logoInput'
+    ).files[0]
+
+  if(!file){
+
+    alert(
+      'Pilih logo terlebih dahulu'
+    )
+
+    return
+  }
+
+  const reader =
+    new FileReader()
+
+  reader.onload = function(e){
+
+    const logo =
+      e.target.result
+
+    localStorage.setItem(
+      'schoolLogo',
+      logo
+    )
+
+    document
+      .getElementById(
+        'schoolLogo'
+      )
+      .src = logo
+
+    const preview =
+      document.getElementById(
+        'previewLogo'
+      )
+
+    preview.src = logo
+
+    preview.style.display =
+      'block'
+
+    alert(
+      'Logo berhasil diupload'
+    )
+  }
+
+  reader.readAsDataURL(file)
+}
+
+// ======================
 // LOGOUT
 // ======================
 
@@ -990,6 +1091,10 @@ function logout(){
 
   localStorage.removeItem(
     'school'
+  )
+
+  localStorage.removeItem(
+    'schoolLogo'
   )
 
   window.location.replace(

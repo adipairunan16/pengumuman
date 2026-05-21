@@ -44,7 +44,12 @@ const AdminSchema =
 
     password:String,
 
-    school:String
+    school:String,
+
+    logo:{
+      type:String,
+      default:''
+    }
 
   })
 
@@ -106,13 +111,10 @@ function verifyToken(req){
 
   try{
 
-    const decoded =
-      jwt.verify(
-        token,
-        JWT_SECRET
-      )
-
-    return decoded
+    return jwt.verify(
+      token,
+      JWT_SECRET
+    )
 
   }catch(err){
 
@@ -122,7 +124,7 @@ function verifyToken(req){
 
 
 // ======================
-// PARSE JSON BODY
+// PARSE BODY
 // ======================
 
 async function parseBody(req){
@@ -139,12 +141,11 @@ async function parseBody(req){
 
       try{
 
-        const parsed =
+        resolve(
           body
             ? JSON.parse(body)
             : {}
-
-        resolve(parsed)
+        )
 
       }catch(err){
 
@@ -161,7 +162,7 @@ async function parseBody(req){
 
 module.exports = async (req, res) => {
 
-  try {
+  try{
 
     await connectDB()
 
@@ -170,7 +171,8 @@ module.exports = async (req, res) => {
       `http://${req.headers.host}`
     )
 
-    const path = url.pathname
+    const path =
+      url.pathname
 
 
     // ======================
@@ -179,7 +181,8 @@ module.exports = async (req, res) => {
 
     if(
       req.method !== 'GET' &&
-      path !== '/api/upload-excel'
+      path !== '/api/upload-excel' &&
+      path !== '/api/upload-logo'
     ){
 
       req.body =
@@ -215,9 +218,7 @@ module.exports = async (req, res) => {
       const {
 
         username,
-
         password,
-
         school
 
       } = req.body
@@ -262,9 +263,12 @@ module.exports = async (req, res) => {
 
           username,
 
-          password:hashedPassword,
+          password:
+            hashedPassword,
 
-          school
+          school,
+
+          logo:''
 
         })
 
@@ -280,22 +284,27 @@ module.exports = async (req, res) => {
 
 
     // ======================
-    // LOGIN ADMIN
+    // LOGIN
     // ======================
 
     if(
       req.method === 'POST' &&
       (
-        path === '/login' ||
-        path === '/api/login'
+        path === '/api/login' ||
+        path === '/login'
       )
     ){
 
-      const data = req.body
+      const {
+
+        username,
+        password
+
+      } = req.body
 
       const admin =
         await Admin.findOne({
-          username:data.username
+          username
         })
 
       if(!admin){
@@ -310,7 +319,7 @@ module.exports = async (req, res) => {
 
       const validPassword =
         await bcrypt.compare(
-          data.password,
+          password,
           admin.password
         )
 
@@ -347,11 +356,127 @@ module.exports = async (req, res) => {
 
         token,
 
-        school:admin.school,
+        school:
+          admin.school,
 
-        username:admin.username,
+        username:
+          admin.username,
 
-        message:'Login berhasil'
+        logo:
+          admin.logo || '',
+
+        message:
+          'Login berhasil'
+
+      })
+    }
+
+
+    // ======================
+    // GET SCHOOL INFO
+    // ======================
+
+    if(
+      req.method === 'GET' &&
+      path === '/api/school'
+    ){
+
+      const user =
+        verifyToken(req)
+
+      if(!user){
+
+        return res.status(401).json({
+
+          message:'Unauthorized'
+
+        })
+      }
+
+      const admin =
+        await Admin.findById(
+          user.adminId
+        )
+
+      if(!admin){
+
+        return res.status(404).json({
+
+          message:
+            'Admin tidak ditemukan'
+
+        })
+      }
+
+      return res.status(200).json({
+
+        school:
+          admin.school,
+
+        logo:
+          admin.logo || ''
+
+      })
+    }
+
+
+    // ======================
+    // UPLOAD LOGO
+    // ======================
+
+    if(
+      req.method === 'POST' &&
+      path === '/api/upload-logo'
+    ){
+
+      const user =
+        verifyToken(req)
+
+      if(!user){
+
+        return res.status(401).json({
+
+          message:'Unauthorized'
+
+        })
+      }
+
+      const chunks = []
+
+      await new Promise(resolve => {
+
+        req.on('data', chunk => {
+          chunks.push(chunk)
+        })
+
+        req.on('end', resolve)
+      })
+
+      const buffer =
+        Buffer.concat(chunks)
+
+      const base64 =
+        buffer.toString('base64')
+
+      const image =
+        `data:image/png;base64,${base64}`
+
+      await Admin.findByIdAndUpdate(
+
+        user.adminId,
+
+        {
+          logo:image
+        }
+
+      )
+
+      return res.status(200).json({
+
+        message:
+          'Logo berhasil diupload',
+
+        logo:image
 
       })
     }
@@ -364,8 +489,8 @@ module.exports = async (req, res) => {
     if(
       req.method === 'GET' &&
       (
-        path === '/students' ||
-        path === '/api/students'
+        path === '/api/students' ||
+        path === '/students'
       )
     ){
 
@@ -417,7 +542,6 @@ module.exports = async (req, res) => {
         await Student.findOne({
 
           nisn,
-
           school
 
         })
@@ -445,8 +569,8 @@ module.exports = async (req, res) => {
     if(
       req.method === 'POST' &&
       (
-        path === '/students' ||
-        path === '/api/students'
+        path === '/api/students' ||
+        path === '/students'
       )
     ){
 
@@ -539,7 +663,6 @@ module.exports = async (req, res) => {
           {
 
             nisn,
-
             school:user.school
 
           },
@@ -582,7 +705,7 @@ module.exports = async (req, res) => {
 
 
     // ======================
-    // DELETE ALL STUDENTS
+    // DELETE ALL
     // ======================
 
     if(
@@ -647,7 +770,6 @@ module.exports = async (req, res) => {
         await Student.findOneAndDelete({
 
           nisn,
-
           school:user.school
 
         })
@@ -697,9 +819,7 @@ module.exports = async (req, res) => {
       await new Promise(resolve => {
 
         req.on('data', chunk => {
-
           chunks.push(chunk)
-
         })
 
         req.on('end', resolve)
@@ -814,11 +934,12 @@ module.exports = async (req, res) => {
 
     return res.status(404).json({
 
-      message:'Route tidak ditemukan'
+      message:
+        'Route tidak ditemukan'
 
     })
 
-  } catch(err){
+  }catch(err){
 
     console.log(err)
 
