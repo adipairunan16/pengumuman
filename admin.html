@@ -1,129 +1,162 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Kelulusan</title>
 
-  <style>
+<meta charset="UTF-8">
 
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial, Helvetica, sans-serif;
-    }
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-    body{
-      min-height:100vh;
-      background:linear-gradient(135deg,#1e3c72,#2a5298);
-      padding:20px;
-    }
+<title>Admin Kelulusan</title>
 
-    .container{
-      max-width:900px;
-      margin:auto;
-    }
+<!-- NO CACHE -->
+<meta
+  http-equiv="Cache-Control"
+  content="no-cache, no-store, must-revalidate"
+>
 
-    .card{
-      background:#fff;
-      padding:30px;
-      border-radius:20px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.2);
-      margin-bottom:20px;
-    }
+<meta
+  http-equiv="Pragma"
+  content="no-cache"
+>
 
-    .title{
-      text-align:center;
-      font-size:30px;
-      font-weight:bold;
-      color:#1e3c72;
-      margin-bottom:10px;
-    }
+<meta
+  http-equiv="Expires"
+  content="0"
+>
 
-    .subtitle{
-      text-align:center;
-      color:#666;
-      margin-bottom:25px;
-    }
+<style>
 
-    input,
-    select{
-      width:100%;
-      padding:14px;
-      border:2px solid #ddd;
-      border-radius:12px;
-      margin-bottom:15px;
-      font-size:16px;
-    }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, Helvetica, sans-serif;
+}
 
-    input:focus,
-    select:focus{
-      outline:none;
-      border-color:#1e3c72;
-    }
+body{
+  min-height:100vh;
+  background:linear-gradient(
+    135deg,
+    #1e3c72,
+    #2a5298
+  );
+  padding:20px;
+}
 
-    button{
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:12px;
-      background:#1e3c72;
-      color:white;
-      font-size:16px;
-      font-weight:bold;
-      cursor:pointer;
-      margin-bottom:10px;
-      transition:0.3s;
-    }
+.container{
+  max-width:900px;
+  margin:auto;
+}
 
-    button:hover{
-      background:#16325c;
-    }
+.card{
+  background:#fff;
+  padding:30px;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  margin-bottom:20px;
+}
 
-    .btn-warning{
-      background:#ff9500;
-    }
+.title{
+  text-align:center;
+  font-size:30px;
+  font-weight:bold;
+  color:#1e3c72;
+  margin-bottom:10px;
+}
 
-    .btn-danger{
-      background:#ff3b30;
-    }
+.subtitle{
+  text-align:center;
+  color:#666;
+  margin-bottom:25px;
+}
 
-    .btn-success{
-      background:#34c759;
-    }
+input,
+select{
+  width:100%;
+  padding:14px;
+  border:2px solid #ddd;
+  border-radius:12px;
+  margin-bottom:15px;
+  font-size:16px;
+}
 
-    .student-card{
-      border:1px solid #ddd;
-      border-radius:15px;
-      padding:20px;
-      margin-bottom:15px;
-    }
+input:focus,
+select:focus{
+  outline:none;
+  border-color:#1e3c72;
+}
 
-    .student-card h3{
-      color:#1e3c72;
-      margin-bottom:10px;
-    }
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#1e3c72;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-bottom:10px;
+  transition:0.3s;
+}
 
-    .student-card p{
-      margin-bottom:5px;
-      color:#444;
-    }
+button:hover{
+  background:#16325c;
+}
 
-    .message{
-      display:none;
-      padding:15px;
-      border-radius:12px;
-      margin-top:15px;
-      text-align:center;
-      font-weight:bold;
-    }
+.btn-warning{
+  background:#ff9500;
+}
 
-    .success{
-      background:#e7ffe7;
-      border:2px solid #34c759;
-      color:#155724;
-    }
+.btn-danger{
+  background:#ff3b30;
+}
+
+.btn-success{
+  background:#34c759;
+}
+
+.student-card{
+  border:1px solid #ddd;
+  border-radius:15px;
+  padding:20px;
+  margin-bottom:15px;
+}
+
+.student-card h3{
+  color:#1e3c72;
+  margin-bottom:10px;
+}
+
+.student-card p{
+  margin-bottom:5px;
+  color:#444;
+}
+
+.message{
+  display:none;
+  padding:15px;
+  border-radius:12px;
+  margin-top:15px;
+  text-align:center;
+  font-weight:bold;
+}
+
+.success{
+  background:#e7ffe7;
+  border:2px solid #34c759;
+  color:#155724;
+}
+
+.fail{
+  background:#ffe7e7;
+  border:2px solid #ff3b30;
+  color:#721c24;
+}
+
 .upload-box{
   background:#34c759;
   padding:15px;
@@ -133,158 +166,161 @@
 
 .template-link{
   margin-top:10px;
-  text-align:left;
 }
 
 .template-link a{
   color:white;
-  font-size:14px;
   text-decoration:underline;
   cursor:pointer;
 }
-    .fail{
-      background:#ffe7e7;
-      border:2px solid #ff3b30;
-      color:#721c24;
-    }
 
-    @media(max-width:600px){
+@media(max-width:600px){
 
-      .card{
-        padding:20px;
-      }
+  .card{
+    padding:20px;
+  }
 
-      .title{
-        font-size:24px;
-      }
-    }
+  .title{
+    font-size:24px;
+  }
+}
 
-  </style>
+</style>
 
 </head>
+
 <body>
 
 <div class="container">
 
-  <!-- FORM -->
-  <div class="card">
+<div class="card">
 
-    <div class="title">
-      ADMIN KELULUSAN
-    </div>
+<div class="title">
+ADMIN KELULUSAN
+</div>
 
-    <div class="subtitle">
-      Tambah, Edit, dan Hapus Data Siswa
-    </div>
+<div class="subtitle">
+Tambah, Edit, dan Hapus Data
+</div>
 
-    <input
-      type="text"
-      id="nisn"
-      placeholder="NISN"
-    >
+<input
+  type="text"
+  id="nisn"
+  placeholder="NISN"
+>
 
-    <input
-      type="text"
-      id="nama"
-      placeholder="Nama Siswa"
-    >
+<input
+  type="text"
+  id="nama"
+  placeholder="Nama Siswa"
+>
 
-    <input
-      type="text"
-      id="kelas"
-      placeholder="Kelas"
-    >
+<input
+  type="text"
+  id="kelas"
+  placeholder="Kelas"
+>
 
-    <select id="status">
+<select id="status">
 
-      <option value="LULUS">
-        LULUS
-      </option>
+<option value="LULUS">
+LULUS
+</option>
 
-      <option value="TIDAK LULUS">
-        TIDAK LULUS
-      </option>
+<option value="TIDAK LULUS">
+TIDAK LULUS
+</option>
 
-    </select>
+</select>
 
-    <button
-      id="saveBtn"
-      onclick="tambahSiswa()"
-    >
-      Simpan Data
-    </button>
+<button
+  id="saveBtn"
+  onclick="tambahSiswa()"
+>
+Simpan Data
+</button>
+
 <div class="upload-box">
 
-  <input
-    type="file"
-    id="excelFile"
-    accept=".xlsx,.xls"
-    onchange="uploadExcel()"
-  >
+<input
+  type="file"
+  id="excelFile"
+  accept=".xlsx,.xls"
+>
 
-  <div class="template-link">
-    <a href="#" onclick="downloadTemplate()">
-      Download Template Excel
-    </a>
-  </div>
+<button onclick="uploadExcel()">
+Upload Excel
+</button>
+
+<div class="template-link">
+
+<a onclick="downloadTemplate()">
+Download Template Excel
+</a>
 
 </div>
-    <button
-      class="btn-success"
-      onclick="loadStudents()"
-    >
-      Tampilkan Semua Data
-    </button>
 
-    <button
-      class="btn-danger"
-      onclick="logout()"
-    >
-   
+</div>
 
+<button
+  class="btn-success"
+  onclick="loadStudents()"
+>
+Refresh Data
+</button>
 
-      Logout
-    </button>
 <button
   class="btn-danger"
   onclick="hapusSemuaData()"
 >
-  Hapus Semua Data
+Hapus Semua Data
 </button>
-    <div id="message" class="message"></div>
 
-  </div>
+<button
+  class="btn-danger"
+  onclick="logout()"
+>
+Logout
+</button>
 
-
-  <!-- LIST DATA -->
-  <div
-    id="studentList"
-    class="card"
-  >
-
-    <div class="subtitle">
-      Data siswa akan tampil di sini
-    </div>
-
-  </div>
+<div
+  id="message"
+  class="message"
+></div>
 
 </div>
 
+<div
+  id="studentList"
+  class="card"
+>
+
+<div class="subtitle">
+Loading data...
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <script>
+
+const BASE_URL = '/api'
+
+const token =
+  localStorage.getItem('token')
+
+let editId = null
+
 // ======================
-// ======================
-// CEK LOGIN
+// CHECK LOGIN
 // ======================
 
-function checkLogin(){
-
-  const token =
-    localStorage.getItem('token')
+async function checkLogin(){
 
   if(!token){
-
-    alert('Silakan login terlebih dahulu')
 
     window.location.replace(
       '/index.html'
@@ -292,12 +328,42 @@ function checkLogin(){
 
     return
   }
+
+  try{
+
+    const response = await fetch(
+      `${BASE_URL}/students`,
+      {
+        headers:{
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    )
+
+    if(!response.ok){
+
+      localStorage.removeItem(
+        'token'
+      )
+
+      window.location.replace(
+        '/index.html'
+      )
+    }
+
+  }catch(err){
+
+    window.location.replace(
+      '/index.html'
+    )
+  }
 }
 
 checkLogin()
 
 // ======================
-// DETEKSI BACK/FORWARD
+// BLOCK BACK/FORWARD
 // ======================
 
 window.addEventListener(
@@ -308,288 +374,105 @@ window.addEventListener(
 
   }
 )
-const BASE_URL = '/api'
-
-const token =
-  localStorage.getItem('token')
-
-let editId = null
 
 // ======================
-// UPLOAD EXCEL
+// SHOW MESSAGE
 // ======================
 
-async function uploadExcel(){
+function showMessage(
+  text,
+  success
+){
 
-  const fileInput = document
-    .getElementById('excelFile')
+  const message =
+    document.getElementById(
+      'message'
+    )
 
-  const file = fileInput.files[0]
+  message.style.display =
+    'block'
 
-  if(!file){
+  message.className =
+    success
+      ? 'message success'
+      : 'message fail'
 
-    alert('Pilih file excel terlebih dahulu')
-    return
-  }
-
-  const formData = new FormData()
-
-  formData.append('file', file)
-
-  try {
-
-   const response = await fetch(
-  `${BASE_URL}/upload-excel`,
-  {
-    method:'POST',
-
-    headers:{
-      Authorization:
-        `Bearer ${token}`
-    },
-
-    body:formData
-  }
-)
-
-    const result = await response.json()
-
-    if(!response.ok){
-
-      alert(result.message)
-      return
-    }
-
-    alert(result.message)
-
-    loadStudents()
-
-    fileInput.value = ''
-
-  } catch(error){
-
-    alert('Server Error')
-  }
+  message.innerHTML = text
 }
 
 // ======================
-// DOWNLOAD TEMPLATE XLSX
+// RESET FORM
 // ======================
 
-function downloadTemplate(){
+function resetForm(){
 
-  const data = [
-    {
-      nisn:'12345',
-      nama:'Andi',
-      kelas:'XII IPA 1',
-      status:'LULUS'
-    },
-    {
-      nisn:'67890',
-      nama:'Budi',
-      kelas:'XII IPA 2',
-      status:'TIDAK LULUS'
-    }
-  ]
+  editId = null
 
-  // Buat worksheet
-  const worksheet =
-    XLSX.utils.json_to_sheet(data)
-
-  // Buat workbook
-  const workbook =
-    XLSX.utils.book_new()
-
-  // Tambahkan sheet
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    'Data Siswa'
-  )
-
-  // Download file excel
-  XLSX.writeFile(
-    workbook,
-    'template_data_siswa.xlsx'
-  )
-}
-// ======================
-// HAPUS SEMUA DATA
-// ======================
-
-async function hapusSemuaData(){
-
-  const confirmDelete = confirm(
-    'Yakin ingin menghapus semua data siswa?'
-  )
-
-  if(!confirmDelete){
-    return
-  }
-
-  try {
-
-    const response = await fetch(
-  `${BASE_URL}/students/all`,
-  {
-    method:'DELETE',
-
-    headers:{
-      Authorization:
-        `Bearer ${token}`
-    }
-  }
-)
-
-    const result = await response.json()
-
-    if(!response.ok){
-
-      alert(result.message)
-      return
-    }
-
-    alert(result.message)
-
-    loadStudents()
-
-  } catch(error){
-
-    alert('Server Error')
-  }
-}
-// ======================
-// TAMBAH SISWA
-// ======================
-
-async function tambahSiswa(){
-
-  const nisn = document
+  document
     .getElementById('nisn')
-    .value
+    .value = ''
 
-  const nama = document
+  document
     .getElementById('nama')
-    .value
+    .value = ''
 
-  const kelas = document
+  document
     .getElementById('kelas')
-    .value
+    .value = ''
 
-  const status = document
+  document
     .getElementById('status')
-    .value
+    .value = 'LULUS'
 
-  const message = document
-    .getElementById('message')
-
-  if(!nisn || !nama || !kelas){
-
-    showMessage(
-      'Semua field wajib diisi',
-      false
-    )
-
-    return
-  }
-
-  try {
-
-    let response
-
-    // UPDATE
-    if(editId){
-
-      response = await fetch(
-        `${BASE_URL}/students/${editId}`,
-        {
-          method:'PUT',
-          headers:{
-  'Content-Type':'application/json',
-
-  Authorization:
-    `Bearer ${token}`
-},
-          body:JSON.stringify({
-            nisn,
-            nama,
-            kelas,
-            status
-          })
-        }
-      )
-
-    } else {
-
-      // TAMBAH
-      response = await fetch(
-        `${BASE_URL}/students`,
-        {
-          method:'POST',
-          headers:{
-  'Content-Type':'application/json',
-
-  Authorization:
-    `Bearer ${token}`
-},
-          body:JSON.stringify({
-            nisn,
-            nama,
-            kelas,
-            status
-          })
-        }
-      )
-    }
-
-    if(!response.ok){
-
-      showMessage(
-        'Gagal menyimpan data',
-        false
-      )
-
-      return
-    }
-
-    showMessage(
-      editId
-        ? 'Data berhasil diupdate'
-        : 'Data berhasil ditambahkan',
-      true
-    )
-
-    resetForm()
-
-    loadStudents()
-
-  } catch(error){
-
-    showMessage(
-      'Server Error',
-      false
-    )
-  }
+  document
+    .getElementById('saveBtn')
+    .innerHTML = 'Simpan Data'
 }
 
-
 // ======================
-// TAMPILKAN DATA
+// LOAD STUDENTS
 // ======================
 
 async function loadStudents(){
 
-  const studentList = document
-    .getElementById('studentList')
-
-  try {
-
-    const response = await fetch(
-      `${BASE_URL}/students`
+  const studentList =
+    document.getElementById(
+      'studentList'
     )
 
-    const students = await response.json()
+  studentList.innerHTML = `
+    <div class="subtitle">
+      Loading...
+    </div>
+  `
+
+  try{
+
+    const response = await fetch(
+      `${BASE_URL}/students`,
+      {
+        headers:{
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    )
+
+    if(response.status === 401){
+
+      localStorage.removeItem(
+        'token'
+      )
+
+      window.location.replace(
+        '/index.html'
+      )
+
+      return
+    }
+
+    const students =
+      await response.json()
 
     if(students.length === 0){
 
@@ -604,55 +487,59 @@ async function loadStudents(){
 
     studentList.innerHTML = ''
 
-    students.forEach(student => {
+    students.forEach(student=>{
 
       studentList.innerHTML += `
 
-        <div class="student-card">
+      <div class="student-card">
 
-          <h3>${student.nama}</h3>
+      <h3>
+      ${student.nama}
+      </h3>
 
-          <p>
-            <b>NISN :</b>
-            ${student.nisn}
-          </p>
+      <p>
+      <b>NISN:</b>
+      ${student.nisn}
+      </p>
 
-          <p>
-            <b>Kelas :</b>
-            ${student.kelas}
-          </p>
+      <p>
+      <b>Kelas:</b>
+      ${student.kelas}
+      </p>
 
-          <p>
-            <b>Status :</b>
-            ${student.status}
-          </p>
+      <p>
+      <b>Status:</b>
+      ${student.status}
+      </p>
 
-          <button
-            class="btn-warning"
-            onclick="editStudent(
-              '${student.nisn}',
-              '${student.nisn}',
-              '${student.nama}',
-              '${student.kelas}',
-              '${student.status}'
-            )"
-          >
-            Edit
-          </button>
+      <button
+        class="btn-warning"
+        onclick="editStudent(
+          '${student.nisn}',
+          '${student.nisn}',
+          '${student.nama}',
+          '${student.kelas}',
+          '${student.status}'
+        )"
+      >
+      Edit
+      </button>
 
-          <button
-            class="btn-danger"
-            onclick="deleteStudent('${student.nisn}')"
-          >
-            Hapus
-          </button>
+      <button
+        class="btn-danger"
+        onclick="deleteStudent(
+          '${student.nisn}'
+        )"
+      >
+      Hapus
+      </button>
 
-        </div>
+      </div>
 
       `
     })
 
-  } catch(error){
+  }catch(err){
 
     studentList.innerHTML = `
       <div class="subtitle">
@@ -662,9 +549,128 @@ async function loadStudents(){
   }
 }
 
+// ======================
+// ADD / UPDATE
+// ======================
+
+async function tambahSiswa(){
+
+  const nisn =
+    document.getElementById(
+      'nisn'
+    ).value
+
+  const nama =
+    document.getElementById(
+      'nama'
+    ).value
+
+  const kelas =
+    document.getElementById(
+      'kelas'
+    ).value
+
+  const status =
+    document.getElementById(
+      'status'
+    ).value
+
+  if(!nisn || !nama || !kelas){
+
+    showMessage(
+      'Semua field wajib diisi',
+      false
+    )
+
+    return
+  }
+
+  try{
+
+    let response
+
+    if(editId){
+
+      response = await fetch(
+        `${BASE_URL}/students/${editId}`,
+        {
+          method:'PUT',
+
+          headers:{
+            'Content-Type':
+              'application/json',
+
+            Authorization:
+              `Bearer ${token}`
+          },
+
+          body:JSON.stringify({
+            nisn,
+            nama,
+            kelas,
+            status
+          })
+        }
+      )
+
+    }else{
+
+      response = await fetch(
+        `${BASE_URL}/students`,
+        {
+          method:'POST',
+
+          headers:{
+            'Content-Type':
+              'application/json',
+
+            Authorization:
+              `Bearer ${token}`
+          },
+
+          body:JSON.stringify({
+            nisn,
+            nama,
+            kelas,
+            status
+          })
+        }
+      )
+    }
+
+    const result =
+      await response.json()
+
+    if(!response.ok){
+
+      showMessage(
+        result.message,
+        false
+      )
+
+      return
+    }
+
+    showMessage(
+      result.message,
+      true
+    )
+
+    resetForm()
+
+    loadStudents()
+
+  }catch(err){
+
+    showMessage(
+      'Server Error',
+      false
+    )
+  }
+}
 
 // ======================
-// EDIT DATA
+// EDIT
 // ======================
 
 function editStudent(
@@ -703,102 +709,214 @@ function editStudent(
   })
 }
 
-
 // ======================
-// HAPUS DATA
+// DELETE
 // ======================
 
 async function deleteStudent(id){
 
-  const confirmDelete = confirm(
-    'Yakin ingin menghapus data?'
-  )
+  const confirmDelete =
+    confirm(
+      'Yakin ingin menghapus data?'
+    )
 
   if(!confirmDelete){
     return
   }
 
-  try {
+  try{
 
     const response = await fetch(
-  `${BASE_URL}/students/${id}`,
-  {
-    method:'DELETE',
+      `${BASE_URL}/students/${id}`,
+      {
+        method:'DELETE',
 
-    headers:{
-      Authorization:
-        `Bearer ${token}`
-    }
-  }
-)
+        headers:{
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    )
+
+    const result =
+      await response.json()
 
     if(!response.ok){
 
-      alert('Gagal menghapus data')
+      alert(result.message)
       return
     }
 
-    alert('Data berhasil dihapus')
+    alert(result.message)
 
     loadStudents()
 
-  } catch(error){
+  }catch(err){
 
     alert('Server Error')
   }
 }
 
-
 // ======================
-// RESET FORM
+// DELETE ALL
 // ======================
 
-function resetForm(){
+async function hapusSemuaData(){
 
-  editId = null
+  const confirmDelete =
+    confirm(
+      'Hapus semua data siswa?'
+    )
 
-  document
-    .getElementById('nisn')
-    .value = ''
+  if(!confirmDelete){
+    return
+  }
 
-  document
-    .getElementById('nama')
-    .value = ''
+  try{
 
-  document
-    .getElementById('kelas')
-    .value = ''
+    const response = await fetch(
+      `${BASE_URL}/students/all`,
+      {
+        method:'DELETE',
 
-  document
-    .getElementById('status')
-    .value = 'LULUS'
+        headers:{
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    )
 
-  document
-    .getElementById('saveBtn')
-    .innerHTML = 'Simpan Data'
+    const result =
+      await response.json()
+
+    if(!response.ok){
+
+      alert(result.message)
+      return
+    }
+
+    alert(result.message)
+
+    loadStudents()
+
+  }catch(err){
+
+    alert('Server Error')
+  }
 }
 
-
 // ======================
-// MESSAGE
+// UPLOAD EXCEL
 // ======================
 
-function showMessage(text, success){
+async function uploadExcel(){
 
-  const message = document
-    .getElementById('message')
+  const fileInput =
+    document.getElementById(
+      'excelFile'
+    )
 
-  message.style.display = 'block'
+  const file =
+    fileInput.files[0]
 
-  message.className = success
-    ? 'message success'
-    : 'message fail'
+  if(!file){
 
-  message.innerHTML = text
+    alert(
+      'Pilih file excel'
+    )
+
+    return
+  }
+
+  const formData =
+    new FormData()
+
+  formData.append(
+    'file',
+    file
+  )
+
+  try{
+
+    const response = await fetch(
+      `${BASE_URL}/upload-excel`,
+      {
+        method:'POST',
+
+        headers:{
+          Authorization:
+            `Bearer ${token}`
+        },
+
+        body:formData
+      }
+    )
+
+    const result =
+      await response.json()
+
+    if(!response.ok){
+
+      alert(result.message)
+      return
+    }
+
+    alert(result.message)
+
+    fileInput.value = ''
+
+    loadStudents()
+
+  }catch(err){
+
+    alert('Server Error')
+  }
 }
 
-
 // ======================
+// TEMPLATE XLSX
+// ======================
+
+function downloadTemplate(){
+
+  const data = [
+
+    {
+      nisn:'12345',
+      nama:'Andi',
+      kelas:'XII IPA 1',
+      status:'LULUS'
+    },
+
+    {
+      nisn:'67890',
+      nama:'Budi',
+      kelas:'XII IPA 2',
+      status:'TIDAK LULUS'
+    }
+
+  ]
+
+  const worksheet =
+    XLSX.utils.json_to_sheet(
+      data
+    )
+
+  const workbook =
+    XLSX.utils.book_new()
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    'Data Siswa'
+  )
+
+  XLSX.writeFile(
+    workbook,
+    'template_data_siswa.xlsx'
+  )
+}
+
 // ======================
 // LOGOUT
 // ======================
@@ -814,7 +932,10 @@ function logout(){
   )
 }
 
+// AUTO LOAD
+loadStudents()
+
 </script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
 </body>
 </html>

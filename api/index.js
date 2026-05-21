@@ -19,7 +19,7 @@ const ADMIN_PASS =
   '123456'
 
 // ======================
-// CONNECT DB
+// CONNECT MONGODB
 // ======================
 
 let isConnected = false
@@ -46,30 +46,31 @@ async function connectDB(){
 // SCHEMA
 // ======================
 
-const StudentSchema = new mongoose.Schema({
+const StudentSchema =
+  new mongoose.Schema({
 
-  nisn:{
-    type:String,
-    required:true,
-    unique:true
-  },
+    nisn:{
+      type:String,
+      required:true,
+      unique:true
+    },
 
-  nama:{
-    type:String,
-    required:true
-  },
+    nama:{
+      type:String,
+      required:true
+    },
 
-  kelas:{
-    type:String,
-    required:true
-  },
+    kelas:{
+      type:String,
+      required:true
+    },
 
-  status:{
-    type:String,
-    required:true
-  }
+    status:{
+      type:String,
+      required:true
+    }
 
-})
+  })
 
 const Student =
   mongoose.models.students ||
@@ -114,7 +115,7 @@ function verifyToken(req){
 }
 
 // ======================
-// PARSE BODY
+// PARSE JSON BODY
 // ======================
 
 async function parseBody(req){
@@ -146,7 +147,7 @@ async function parseBody(req){
 }
 
 // ======================
-// MAIN API
+// API HANDLER
 // ======================
 
 module.exports = async (req,res)=>{
@@ -205,7 +206,7 @@ module.exports = async (req,res)=>{
     }
 
     // ======================
-    // LOGIN
+    // LOGIN ADMIN
     // ======================
 
     if(
@@ -382,7 +383,9 @@ module.exports = async (req,res)=>{
       const updated =
         await Student.findOneAndUpdate(
 
-          { nisn },
+          {
+            nisn
+          },
 
           {
             nisn:body.nisn,
@@ -449,7 +452,7 @@ module.exports = async (req,res)=>{
     }
 
     // ======================
-    // DELETE ALL
+    // DELETE ALL STUDENTS
     // ADMIN ONLY
     // ======================
 
@@ -599,7 +602,7 @@ module.exports = async (req,res)=>{
     }
 
     // ======================
-    // NOT FOUND
+    // ROUTE NOT FOUND
     // ======================
 
     return res.status(404).json({
