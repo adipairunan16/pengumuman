@@ -578,11 +578,17 @@ async function loginAdmin(){
 
   const username = document
     .getElementById('username')
-    .value
+    .value.trim()
 
   const password = document
     .getElementById('password')
-    .value
+    .value.trim()
+
+  if(!username || !password){
+
+    alert('Username dan password wajib diisi')
+    return
+  }
 
   try {
 
@@ -607,16 +613,21 @@ async function loginAdmin(){
       alert(data.message)
       return
     }
- // SIMPAN STATUS LOGIN
-    sessionStorage.setItem(
-      'isLogin',
-      'true'
+
+    // SIMPAN TOKEN LOGIN
+    localStorage.setItem(
+      'token',
+      data.token
     )
+
     alert('Login berhasil')
 
-    window.location.href = '/admin.html'
+    window.location.href =
+      '/admin.html'
 
   } catch(error){
+
+    console.log(error)
 
     alert('Server Error')
   }

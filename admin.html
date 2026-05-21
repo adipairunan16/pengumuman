@@ -279,14 +279,18 @@
 
 function checkLogin(){
 
-  if(
-    sessionStorage.getItem('isLogin')
-    !== 'true'
-  ){
+  const token =
+    localStorage.getItem('token')
+
+  if(!token){
+
+    alert('Silakan login terlebih dahulu')
 
     window.location.replace(
       '/index.html'
     )
+
+    return
   }
 }
 
@@ -298,21 +302,16 @@ checkLogin()
 
 window.addEventListener(
   'pageshow',
-  function(event){
+  function(){
 
-    if(event.persisted){
+    checkLogin()
 
-      sessionStorage.removeItem(
-        'isLogin'
-      )
-
-      window.location.replace(
-        '/index.html'
-      )
-    }
   }
 )
 const BASE_URL = '/api'
+
+const token =
+  localStorage.getItem('token')
 
 let editId = null
 
@@ -339,13 +338,19 @@ async function uploadExcel(){
 
   try {
 
-    const response = await fetch(
-      `${BASE_URL}/upload-excel`,
-      {
-        method:'POST',
-        body:formData
-      }
-    )
+   const response = await fetch(
+  `${BASE_URL}/upload-excel`,
+  {
+    method:'POST',
+
+    headers:{
+      Authorization:
+        `Bearer ${token}`
+    },
+
+    body:formData
+  }
+)
 
     const result = await response.json()
 
@@ -426,11 +431,16 @@ async function hapusSemuaData(){
   try {
 
     const response = await fetch(
-      `${BASE_URL}/students/all`,
-      {
-        method:'DELETE'
-      }
-    )
+  `${BASE_URL}/students/all`,
+  {
+    method:'DELETE',
+
+    headers:{
+      Authorization:
+        `Bearer ${token}`
+    }
+  }
+)
 
     const result = await response.json()
 
@@ -496,8 +506,11 @@ async function tambahSiswa(){
         {
           method:'PUT',
           headers:{
-            'Content-Type':'application/json'
-          },
+  'Content-Type':'application/json',
+
+  Authorization:
+    `Bearer ${token}`
+},
           body:JSON.stringify({
             nisn,
             nama,
@@ -515,8 +528,11 @@ async function tambahSiswa(){
         {
           method:'POST',
           headers:{
-            'Content-Type':'application/json'
-          },
+  'Content-Type':'application/json',
+
+  Authorization:
+    `Bearer ${token}`
+},
           body:JSON.stringify({
             nisn,
             nama,
@@ -705,11 +721,16 @@ async function deleteStudent(id){
   try {
 
     const response = await fetch(
-      `${BASE_URL}/students/${id}`,
-      {
-        method:'DELETE'
-      }
-    )
+  `${BASE_URL}/students/${id}`,
+  {
+    method:'DELETE',
+
+    headers:{
+      Authorization:
+        `Bearer ${token}`
+    }
+  }
+)
 
     if(!response.ok){
 
@@ -784,11 +805,10 @@ function showMessage(text, success){
 
 function logout(){
 
-  sessionStorage.removeItem(
-    'isLogin'
+  localStorage.removeItem(
+    'token'
   )
 
-  // HAPUS HISTORY
   window.location.replace(
     '/index.html'
   )

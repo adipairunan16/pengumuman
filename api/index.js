@@ -1,5 +1,22 @@
 const mongoose = require('mongoose')
 const XLSX = require('xlsx')
+const jwt = require('jsonwebtoken')
+
+// ======================
+// ENV
+// ======================
+
+const JWT_SECRET =
+  process.env.JWT_SECRET ||
+  'super-rahasia-123'
+
+const ADMIN_USER =
+  process.env.ADMIN_USER ||
+  'smk'
+
+const ADMIN_PASS =
+  process.env.ADMIN_PASS ||
+  '123456'
 
 // ======================
 // CONNECT DB
@@ -13,43 +30,160 @@ async function connectDB(){
     return
   }
 
-  await mongoose.connect(process.env.MONGO_URI)
+  await mongoose.connect(
+    process.env.MONGO_URI,
+    {
+      dbName:'CBT'
+    }
+  )
 
   isConnected = true
 
   console.log('MongoDB Connected')
 }
 
-
 // ======================
 // SCHEMA
 // ======================
 
 const StudentSchema = new mongoose.Schema({
-  nisn:String,
-  nama:String,
-  kelas:String,
-  status:String
+
+  nisn:{
+    type:String,
+    required:true,
+    unique:true
+  },
+
+  nama:{
+    type:String,
+    required:true
+  },
+
+  kelas:{
+    type:String,
+    required:true
+  },
+
+  status:{
+    type:String,
+    required:true
+  }
+
 })
 
 const Student =
   mongoose.models.students ||
-  mongoose.model('students', StudentSchema)
-
+  mongoose.model(
+    'students',
+    StudentSchema
+  )
 
 // ======================
-// API
+// VERIFY TOKEN
 // ======================
 
-module.exports = async (req, res) => {
+function verifyToken(req){
 
-  try {
+  const authHeader =
+    req.headers.authorization
+
+  if(!authHeader){
+    return false
+  }
+
+  const token =
+    authHeader.replace(
+      'Bearer ',
+      ''
+    )
+
+  try{
+
+    const decoded =
+      jwt.verify(
+        token,
+        JWT_SECRET
+      )
+
+    return decoded
+
+  }catch(err){
+
+    return false
+  }
+}
+
+// ======================
+// PARSE BODY
+// ======================
+
+async function parseBody(req){
+
+  return new Promise((resolve,reject)=>{
+
+    let body = ''
+
+    req.on('data', chunk => {
+      body += chunk
+    })
+
+    req.on('end', ()=>{
+
+      try{
+
+        resolve(
+          body
+            ? JSON.parse(body)
+            : {}
+        )
+
+      }catch(err){
+
+        reject(err)
+      }
+    })
+  })
+}
+
+// ======================
+// MAIN API
+// ======================
+
+module.exports = async (req,res)=>{
+
+  try{
+
+    // ======================
+    // CORS
+    // ======================
+
+    res.setHeader(
+      'Access-Control-Allow-Origin',
+      '*'
+    )
+
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET,POST,PUT,DELETE,OPTIONS'
+    )
+
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization'
+    )
+
+    if(req.method === 'OPTIONS'){
+      return res.status(200).end()
+    }
+
+    // ======================
+    // CONNECT DB
+    // ======================
 
     await connectDB()
 
-
     // ======================
-    // URL PATH
+    // URL
     // ======================
 
     const url = new URL(
@@ -59,162 +193,47 @@ module.exports = async (req, res) => {
 
     const path = url.pathname
 
-
-    // ======================
-    // UPLOAD EXCEL
-    // ======================
-
-    if(
-      req.method === 'POST' &&
-      path === '/api/upload-excel'
-    ){
-
-      const chunks = []
-
-      await new Promise(resolve => {
-
-        req.on('data', chunk => {
-          chunks.push(chunk)
-        })
-
-        req.on('end', resolve)
-      })
-
-      const buffer = Buffer.concat(chunks)
-
-      // Cari file excel
-      const start = buffer.indexOf(
-        Buffer.from('PK')
-      )
-
-      if(start === -1){
-
-        return res.status(400).json({
-          message:'File excel tidak valid'
-        })
-      }
-
-      const excelBuffer = buffer.slice(start)
-
-      const workbook = XLSX.read(
-        excelBuffer,
-        {
-          type:'buffer'
-        }
-      )
-
-      const sheetName = workbook.SheetNames[0]
-
-      const sheet =
-        workbook.Sheets[sheetName]
-
-      const data =
-        XLSX.utils.sheet_to_json(sheet)
-
-      const students = data.map(item => ({
-
-        nisn:String(
-          item.nisn ||
-          item.NISN ||
-          ''
-        ).trim(),
-
-        nama:String(
-          item.nama ||
-          item.Nama ||
-          ''
-        ).trim(),
-
-        kelas:String(
-          item.kelas ||
-          item.Kelas ||
-          ''
-        ).trim(),
-
-        status:String(
-          item.status ||
-          item.Status ||
-          ''
-        ).trim()
-
-      }))
-
-      // Hapus data kosong
-      const filteredStudents =
-        students.filter(
-          s => s.nisn && s.nama
-        )
-
-      await Student.insertMany(
-        filteredStudents
-      )
-
-      return res.status(200).json({
-        message:'Data excel berhasil diupload'
-      })
-    }
-
-
-    // ======================
-    // PARSE BODY
-    // ======================
-
-    req.body = {}
-
-    if(
-      req.method !== 'GET' &&
-      path !== '/api/upload-excel'
-    ){
-
-      let body = ''
-
-      await new Promise(resolve => {
-
-        req.on('data', chunk => {
-          body += chunk
-        })
-
-        req.on('end', resolve)
-      })
-
-      req.body = body
-        ? JSON.parse(body)
-        : {}
-    }
-
-
     // ======================
     // TEST API
     // ======================
 
     if(path === '/api'){
 
-      return res
-        .status(200)
-        .send('API hidup')
+      return res.status(200).json({
+        message:'API hidup'
+      })
     }
 
-
     // ======================
-    // LOGIN ADMIN
+    // LOGIN
     // ======================
 
     if(
       req.method === 'POST' &&
-      (
-        path === '/login' ||
-        path === '/api/login'
-      )
+      path === '/api/login'
     ){
 
-      const data = req.body
+      const body =
+        await parseBody(req)
 
       if(
-        data.username === 'admin' &&
-        data.password === '123456'
+        body.username === ADMIN_USER &&
+        body.password === ADMIN_PASS
       ){
 
+        const token =
+          jwt.sign(
+            {
+              role:'admin'
+            },
+            JWT_SECRET,
+            {
+              expiresIn:'1d'
+            }
+          )
+
         return res.status(200).json({
+          token,
           message:'Login berhasil'
         })
       }
@@ -224,27 +243,37 @@ module.exports = async (req, res) => {
       })
     }
 
-
     // ======================
     // GET ALL STUDENTS
+    // ADMIN ONLY
     // ======================
 
     if(
       req.method === 'GET' &&
-      (
-        path === '/students' ||
-        path === '/api/students'
-      )
+      path === '/api/students'
     ){
 
-      const students = await Student.find()
+      const auth =
+        verifyToken(req)
 
-      return res.status(200).json(students)
+      if(!auth){
+
+        return res.status(401).json({
+          message:'Unauthorized'
+        })
+      }
+
+      const students =
+        await Student.find()
+
+      return res.status(200).json(
+        students
+      )
     }
 
-
     // ======================
-    // GET BY NISN
+    // GET STUDENT BY NISN
+    // PUBLIC
     // ======================
 
     if(
@@ -252,10 +281,13 @@ module.exports = async (req, res) => {
       path.startsWith('/api/students/')
     ){
 
-      const nisn = path.split('/').pop()
+      const nisn =
+        path.split('/').pop()
 
       const student =
-        await Student.findOne({ nisn })
+        await Student.findOne({
+          nisn
+        })
 
       if(!student){
 
@@ -264,28 +296,55 @@ module.exports = async (req, res) => {
         })
       }
 
-      return res.status(200).json(student)
+      return res.status(200).json(
+        student
+      )
     }
-
 
     // ======================
     // ADD STUDENT
+    // ADMIN ONLY
     // ======================
 
     if(
       req.method === 'POST' &&
-      (
-        path === '/students' ||
-        path === '/api/students'
-      )
+      path === '/api/students'
     ){
 
-      const student = new Student({
-        nisn:req.body.nisn,
-        nama:req.body.nama,
-        kelas:req.body.kelas,
-        status:req.body.status
-      })
+      const auth =
+        verifyToken(req)
+
+      if(!auth){
+
+        return res.status(401).json({
+          message:'Unauthorized'
+        })
+      }
+
+      const body =
+        await parseBody(req)
+
+      const exists =
+        await Student.findOne({
+          nisn:body.nisn
+        })
+
+      if(exists){
+
+        return res.status(400).json({
+          message:'NISN sudah ada'
+        })
+      }
+
+      const student =
+        new Student({
+
+          nisn:body.nisn,
+          nama:body.nama,
+          kelas:body.kelas,
+          status:body.status
+
+        })
 
       await student.save()
 
@@ -294,9 +353,9 @@ module.exports = async (req, res) => {
       })
     }
 
-
     // ======================
     // UPDATE STUDENT
+    // ADMIN ONLY
     // ======================
 
     if(
@@ -304,18 +363,37 @@ module.exports = async (req, res) => {
       path.startsWith('/api/students/')
     ){
 
-      const nisn = path.split('/').pop()
+      const auth =
+        verifyToken(req)
+
+      if(!auth){
+
+        return res.status(401).json({
+          message:'Unauthorized'
+        })
+      }
+
+      const body =
+        await parseBody(req)
+
+      const nisn =
+        path.split('/').pop()
 
       const updated =
         await Student.findOneAndUpdate(
+
           { nisn },
+
           {
-            nisn:req.body.nisn,
-            nama:req.body.nama,
-            kelas:req.body.kelas,
-            status:req.body.status
+            nisn:body.nisn,
+            nama:body.nama,
+            kelas:body.kelas,
+            status:body.status
           },
-          { new:true }
+
+          {
+            new:true
+          }
         )
 
       if(!updated){
@@ -330,26 +408,9 @@ module.exports = async (req, res) => {
       })
     }
 
-
-    // ======================
-    // DELETE ALL STUDENTS
-    // ======================
-
-    if(
-      req.method === 'DELETE' &&
-      path === '/api/students/all'
-    ){
-
-      await Student.deleteMany({})
-
-      return res.status(200).json({
-        message:'Semua data berhasil dihapus'
-      })
-    }
-
-
     // ======================
     // DELETE STUDENT
+    // ADMIN ONLY
     // ======================
 
     if(
@@ -357,12 +418,23 @@ module.exports = async (req, res) => {
       path.startsWith('/api/students/')
     ){
 
-      const nisn = path.split('/').pop()
+      const auth =
+        verifyToken(req)
+
+      if(!auth){
+
+        return res.status(401).json({
+          message:'Unauthorized'
+        })
+      }
+
+      const nisn =
+        path.split('/').pop()
 
       const deleted =
-        await Student.findOneAndDelete(
-          { nisn }
-        )
+        await Student.findOneAndDelete({
+          nisn
+        })
 
       if(!deleted){
 
@@ -376,6 +448,155 @@ module.exports = async (req, res) => {
       })
     }
 
+    // ======================
+    // DELETE ALL
+    // ADMIN ONLY
+    // ======================
+
+    if(
+      req.method === 'DELETE' &&
+      path === '/api/students/all'
+    ){
+
+      const auth =
+        verifyToken(req)
+
+      if(!auth){
+
+        return res.status(401).json({
+          message:'Unauthorized'
+        })
+      }
+
+      await Student.deleteMany({})
+
+      return res.status(200).json({
+        message:'Semua data berhasil dihapus'
+      })
+    }
+
+    // ======================
+    // UPLOAD EXCEL
+    // ADMIN ONLY
+    // ======================
+
+    if(
+      req.method === 'POST' &&
+      path === '/api/upload-excel'
+    ){
+
+      const auth =
+        verifyToken(req)
+
+      if(!auth){
+
+        return res.status(401).json({
+          message:'Unauthorized'
+        })
+      }
+
+      const chunks = []
+
+      await new Promise(resolve=>{
+
+        req.on('data', chunk=>{
+          chunks.push(chunk)
+        })
+
+        req.on('end', resolve)
+      })
+
+      const buffer =
+        Buffer.concat(chunks)
+
+      const start =
+        buffer.indexOf(
+          Buffer.from('PK')
+        )
+
+      if(start === -1){
+
+        return res.status(400).json({
+          message:'File excel tidak valid'
+        })
+      }
+
+      const excelBuffer =
+        buffer.slice(start)
+
+      const workbook =
+        XLSX.read(
+          excelBuffer,
+          {
+            type:'buffer'
+          }
+        )
+
+      const sheetName =
+        workbook.SheetNames[0]
+
+      const sheet =
+        workbook.Sheets[sheetName]
+
+      const data =
+        XLSX.utils.sheet_to_json(sheet)
+
+      const students =
+        data.map(item=>({
+
+          nisn:String(
+            item.nisn ||
+            item.NISN ||
+            ''
+          ).trim(),
+
+          nama:String(
+            item.nama ||
+            item.Nama ||
+            ''
+          ).trim(),
+
+          kelas:String(
+            item.kelas ||
+            item.Kelas ||
+            ''
+          ).trim(),
+
+          status:String(
+            item.status ||
+            item.Status ||
+            ''
+          ).trim()
+
+        }))
+
+      const filtered =
+        students.filter(
+          s => s.nisn && s.nama
+        )
+
+      for(const student of filtered){
+
+        await Student.updateOne(
+
+          {
+            nisn:student.nisn
+          },
+
+          {
+            $set:student
+          },
+
+          {
+            upsert:true
+          }
+        )
+      }
+
+      return res.status(200).json({
+        message:'Upload excel berhasil'
+      })
+    }
 
     // ======================
     // NOT FOUND
@@ -385,10 +606,12 @@ module.exports = async (req, res) => {
       message:'Route tidak ditemukan'
     })
 
-  } catch(err){
+  }catch(err){
+
+    console.error(err)
 
     return res.status(500).json({
-      error: err.message
+      error:err.message
     })
   }
 }
