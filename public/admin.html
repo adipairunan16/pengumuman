@@ -73,6 +73,13 @@ body{
   margin-bottom:25px;
 }
 
+.school-info{
+  text-align:center;
+  margin-bottom:20px;
+  font-weight:bold;
+  color:#1e3c72;
+}
+
 input,
 select{
   width:100%;
@@ -174,6 +181,13 @@ button:hover{
   cursor:pointer;
 }
 
+.total-data{
+  text-align:center;
+  margin-top:10px;
+  font-weight:bold;
+  color:#1e3c72;
+}
+
 @media(max-width:600px){
 
   .card{
@@ -201,6 +215,13 @@ ADMIN KELULUSAN
 
 <div class="subtitle">
 Tambah, Edit, dan Hapus Data
+</div>
+
+<div
+  id="schoolInfo"
+  class="school-info"
+>
+Loading sekolah...
 </div>
 
 <input
@@ -284,6 +305,13 @@ Logout
 </button>
 
 <div
+  id="totalData"
+  class="total-data"
+>
+Total Siswa: 0
+</div>
+
+<div
   id="message"
   class="message"
 ></div>
@@ -296,7 +324,8 @@ Logout
 >
 
 <div class="subtitle">
-Loading data...
+Klik tombol "Tampilkan Semua Data"
+untuk melihat data siswa
 </div>
 
 </div>
@@ -341,15 +370,36 @@ async function checkLogin(){
       }
     )
 
-    if(!response.ok){
+    if(response.status === 401){
 
       localStorage.removeItem(
         'token'
       )
 
+      localStorage.removeItem(
+        'school'
+      )
+
       window.location.replace(
         '/index.html'
       )
+
+      return
+    }
+
+    const school =
+      localStorage.getItem(
+        'school'
+      )
+
+    if(school){
+
+      document
+        .getElementById(
+          'schoolInfo'
+        )
+        .innerHTML =
+          `Sekolah: ${school}`
     }
 
   }catch(err){
@@ -464,6 +514,10 @@ async function loadStudents(){
         'token'
       )
 
+      localStorage.removeItem(
+        'school'
+      )
+
       window.location.replace(
         '/index.html'
       )
@@ -473,6 +527,13 @@ async function loadStudents(){
 
     const students =
       await response.json()
+
+    document
+      .getElementById(
+        'totalData'
+      )
+      .innerHTML =
+        `Total Siswa: ${students.length}`
 
     if(students.length === 0){
 
@@ -927,12 +988,14 @@ function logout(){
     'token'
   )
 
+  localStorage.removeItem(
+    'school'
+  )
+
   window.location.replace(
     '/index.html'
   )
 }
-
-
 
 </script>
 
