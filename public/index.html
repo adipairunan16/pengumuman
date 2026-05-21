@@ -194,6 +194,15 @@ button:hover{
   text-align:center;
 }
 
+.register-btn{
+  background:#34c759;
+  margin-top:10px;
+}
+
+.register-btn:hover{
+  background:#28a745;
+}
+
 @media(max-width:500px){
 
   .card{
@@ -231,8 +240,14 @@ PENGUMUMAN KELULUSAN
 </div>
 
 <div class="subtitle">
-Masukkan NISN untuk melihat hasil kelulusan
+Masukkan data untuk melihat hasil kelulusan
 </div>
+
+<input
+  type="text"
+  id="school"
+  placeholder="Nama Sekolah"
+>
 
 <input
   type="text"
@@ -289,6 +304,13 @@ Login Admin
 Login
 </button>
 
+<button
+  class="register-btn"
+  onclick="window.location.href='/register.html'"
+>
+Daftar Admin / Sekolah
+</button>
+
 </div>
 
 </div>
@@ -333,6 +355,14 @@ function closeLogin(){
 
 async function cekKelulusan(){
 
+  const school =
+    document
+      .getElementById(
+        'school'
+      )
+      .value
+      .trim()
+
   const nisn =
     document
       .getElementById(
@@ -346,7 +376,7 @@ async function cekKelulusan(){
       'result'
     )
 
-  if(!nisn){
+  if(!school || !nisn){
 
     result.style.display =
       'block'
@@ -356,7 +386,7 @@ async function cekKelulusan(){
 
     result.innerHTML = `
       <div class="status">
-      Masukkan NISN
+      Lengkapi data terlebih dahulu
       </div>
     `
 
@@ -366,7 +396,9 @@ async function cekKelulusan(){
   try{
 
     const response = await fetch(
-      `${BASE_URL}/students/${nisn}`
+
+      `${BASE_URL}/students/${nisn}?school=${school}`
+
     )
 
     const data =
@@ -401,6 +433,7 @@ async function cekKelulusan(){
         : 'result fail'
 
     result.innerHTML = `
+
       <div class="nama">
       ${data.nama}
       </div>
@@ -412,6 +445,7 @@ async function cekKelulusan(){
       <div class="status">
       ${data.status}
       </div>
+
     `
 
   }catch(err){
@@ -492,6 +526,11 @@ async function loginAdmin(){
     localStorage.setItem(
       'token',
       data.token
+    )
+
+    localStorage.setItem(
+      'school',
+      data.school
     )
 
     alert('Login berhasil')

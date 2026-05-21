@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Daftar Sekolah</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial;
+}
+
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:
+  linear-gradient(
+    135deg,
+    #1e3c72,
+    #2a5298
+  );
+  padding:20px;
+}
+
+.card{
+  width:100%;
+  max-width:450px;
+  background:white;
+  padding:35px;
+  border-radius:20px;
+  box-shadow:0 10px 30px
+  rgba(0,0,0,0.2);
+}
+
+.title{
+  text-align:center;
+  font-size:30px;
+  font-weight:bold;
+  color:#1e3c72;
+  margin-bottom:10px;
+}
+
+.subtitle{
+  text-align:center;
+  color:#666;
+  margin-bottom:25px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:2px solid #ddd;
+  margin-bottom:15px;
+  font-size:16px;
+}
+
+input:focus{
+  outline:none;
+  border-color:#1e3c72;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#1e3c72;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#16325c;
+}
+
+.message{
+  margin-top:15px;
+  padding:15px;
+  border-radius:12px;
+  display:none;
+  text-align:center;
+  font-weight:bold;
+}
+
+.success{
+  background:#e7ffe7;
+  border:2px solid #34c759;
+  color:#155724;
+}
+
+.fail{
+  background:#ffe7e7;
+  border:2px solid #ff3b30;
+  color:#721c24;
+}
+
+.login-link{
+  margin-top:20px;
+  text-align:center;
+}
+
+.login-link a{
+  color:#1e3c72;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="title">
+    DAFTAR SEKOLAH
+  </div>
+
+  <div class="subtitle">
+    Buat akun admin sekolah
+  </div>
+
+  <input
+    type="text"
+    id="school"
+    placeholder="Nama Sekolah"
+  >
+
+  <input
+    type="text"
+    id="username"
+    placeholder="Username Admin"
+  >
+
+  <input
+    type="password"
+    id="password"
+    placeholder="Password"
+  >
+
+  <button onclick="registerAdmin()">
+    Daftar Sekolah
+  </button>
+
+  <div id="message"
+  class="message"></div>
+
+  <div class="login-link">
+    Sudah punya akun?
+    <a href="/index.html">
+      Login
+    </a>
+  </div>
+
+</div>
+
+<script>
+
+const BASE_URL = '/api'
+
+async function registerAdmin(){
+
+  const school =
+    document
+    .getElementById('school')
+    .value.trim()
+
+  const username =
+    document
+    .getElementById('username')
+    .value.trim()
+
+  const password =
+    document
+    .getElementById('password')
+    .value.trim()
+
+  if(
+    !school ||
+    !username ||
+    !password
+  ){
+
+    showMessage(
+      'Semua field wajib diisi',
+      false
+    )
+
+    return
+  }
+
+  try {
+
+    const response =
+      await fetch(
+
+        `${BASE_URL}/register`,
+
+        {
+          method:'POST',
+
+          headers:{
+            'Content-Type':
+            'application/json'
+          },
+
+          body:JSON.stringify({
+
+            school,
+            username,
+            password
+
+          })
+        }
+      )
+
+    const data =
+      await response.json()
+
+    if(!response.ok){
+
+      showMessage(
+        data.message,
+        false
+      )
+
+      return
+    }
+
+    showMessage(
+      'Admin berhasil dibuat',
+      true
+    )
+
+    setTimeout(() => {
+
+      window.location.href =
+        '/index.html'
+
+    }, 1500)
+
+  } catch(error){
+
+    showMessage(
+      'Server Error',
+      false
+    )
+  }
+}
+
+function showMessage(
+  text,
+  success
+){
+
+  const message =
+    document
+    .getElementById('message')
+
+  message.style.display =
+    'block'
+
+  message.className =
+    success
+    ? 'message success'
+    : 'message fail'
+
+  message.innerHTML = text
+}
+
+</script>
+
+</body>
+</html>
